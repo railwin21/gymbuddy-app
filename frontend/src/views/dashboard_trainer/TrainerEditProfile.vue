@@ -1,0 +1,141 @@
+<template>
+  <div class="flex min-h-screen bg-[#0a0b10]">
+    <DashboardSidebar />
+
+    <main class="flex-grow p-8 text-white overflow-y-auto">
+      <div class="max-w-5xl">
+        
+        <div class="bg-[#161920] rounded-[2rem] p-8 border border-gray-900 mb-8 relative overflow-hidden">
+          <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+            <div class="w-24 h-24 bg-red-500 rounded-2xl flex-shrink-0 flex items-center justify-center text-black font-black text-3xl uppercase italic shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+              {{ getInitials(user.nama) }}
+            </div>
+
+            <div class="flex-grow text-center md:text-left">
+              <h2 class="text-2xl font-black uppercase tracking-tight mb-1 italic">{{ user.nama || 'Loading...' }}</h2>
+              <div class="text-gray-500 text-sm mb-5">
+                <p class="flex items-center justify-center md:justify-start gap-2">
+                  <span class="text-red-500">📧</span> {{ user.email }}
+                </p>
+                <p class="uppercase flex items-center justify-center md:justify-start gap-2 mt-1">
+                  <span class="text-red-500">📍</span> {{ user.kota || 'Kota belum diatur' }}, {{ user.propinsi || '' }}
+                </p>
+              </div>
+              
+              <button @click="openEditModal" class="bg-red-500 text-black px-6 py-2.5 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-red-400 shadow-lg shadow-red-500/10">
+                Edit Trainer Profile
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-[#161920] p-10 rounded-[2rem] border border-gray-900 shadow-xl">
+          <h3 class="font-black uppercase text-[10px] tracking-[0.2em] text-gray-500 mb-8">Detailed Information</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div v-for="(val, label) in infoFields" :key="label" class="border-b border-gray-800 pb-4">
+              <p class="text-[9px] uppercase font-black text-red-500 tracking-[0.2em] mb-1.5 opacity-80">{{ label }}</p>
+              <p class="text-sm font-bold text-white uppercase italic">{{ val || '-' }}</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div v-if="showModal" class="fixed inset-0 z-[999] flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md" @click="showModal = false"></div>
+        <div class="relative bg-[#161920] w-full max-w-lg rounded-[2.5rem] border border-gray-800 p-10 shadow-2xl">
+          <h3 class="text-xl font-black uppercase italic mb-8 text-red-500">Update Profile</h3>
+          
+          <form @submit.prevent="handleUpdate" class="space-y-5">
+            <div>
+              <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">Full Name</label>
+              <input type="text" v-model="editForm.nama" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white outline-none focus:border-red-500">
+            </div>
+
+            <div>
+              <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">Official Email</label>
+              <input type="email" v-model="editForm.email" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white outline-none focus:border-red-500">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">Province</label>
+                <input type="text" v-model="editForm.propinsi" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white focus:border-red-500 outline-none">
+              </div>
+              <div>
+                <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">City</label>
+                <input type="text" v-model="editForm.kota" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white focus:border-red-500 outline-none">
+              </div>
+            </div>
+
+            <div class="flex gap-4 pt-6">
+              <button type="button" @click="showModal = false" class="flex-1 py-4 bg-gray-900 rounded-2xl text-[10px] font-black uppercase text-gray-400">Batal</button>
+              <button type="submit" class="flex-1 py-4 bg-red-500 text-black rounded-2xl text-[10px] font-black uppercase shadow-lg shadow-red-500/20">Simpan Perubahan</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import api from '../../utils/api'
+
+const user = ref({ id: '', nama: '', email: '', role: '', kota: '', propinsi: '' })
+const showModal = ref(false)
+const editForm = ref({ nama: '', propinsi: '', kota: '', email: '' })
+
+const infoFields = computed(() => ({
+  "Trainer Name": user.value.nama,
+  "Official Email": user.value.email,
+  "City": user.value.kota,
+  "Province": user.value.propinsi,
+  "Account Role": user.value.role
+}))
+
+const fetchUserProfile = async () => {
+  try {
+    const { data } = await api.get('/auth/me')
+    if (data) { user.value = data }
+  } catch (error) { console.error("Gagal load profil:", error) }
+}
+
+const openEditModal = () => {
+  // Isi form dengan data user saat ini
+  editForm.value = { 
+    nama: user.value.nama,
+    email: user.value.email,
+    propinsi: user.value.propinsi,
+    kota: user.value.kota
+  }
+  showModal.value = true
+}
+
+const handleUpdate = async () => {
+  try {
+    await api.put(`/user/${user.value.id}`, {
+      nama: editForm.value.nama,
+      email: editForm.value.email,
+      propinsi: editForm.value.propinsi,
+      kota: editForm.value.kota
+    })
+    
+    // Update tampilan lokal
+    user.value = { ...user.value, ...editForm.value }
+    showModal.value = false
+    alert("Profil Trainer GymBuddy Berhasil Diperbarui!")
+  } catch (error) {
+    alert("Gagal update data.")
+  }
+}
+
+const getInitials = (name) => {
+  if (!name) return 'GB'
+  const p = name.split(' ')
+  return p.length > 1 ? (p[0][0] + p[1][0]).toUpperCase() : p[0][0].toUpperCase()
+}
+
+onMounted(fetchUserProfile)
+</script>

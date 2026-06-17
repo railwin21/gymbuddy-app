@@ -1,0 +1,150 @@
+<template>
+  <div class="flex min-h-screen bg-black selection:bg-red-500 selection:text-black">
+    <DashboardSidebar />
+
+    <main class="flex-grow p-10 text-white overflow-y-auto">
+      <header class="mb-10">
+        <div class="flex justify-between items-end">
+          <div>
+            <h2 class="text-3xl font-black uppercase tracking-tighter text-white">Cari Trainer</h2>
+            <p class="text-gray-500 text-sm mt-1 font-medium">Temukan sesi latihan terbaik dari database kami.</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+        <input v-model="searchQuery" type="text" placeholder="Cari trainer atau judul sesi..." 
+               class="w-full bg-[#0f1115] border border-gray-800 p-4 rounded-2xl text-sm focus:ring-2 focus:ring-red-500 outline-none text-white">
+      </div>
+
+      <div v-if="loading" class="flex flex-col items-center justify-center py-32">
+        <div class="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-red-500 font-black uppercase tracking-widest text-xs">Memuat data...</p>
+      </div>
+
+      <div v-else-if="error" class="text-center py-20 border border-dashed border-gray-800 rounded-[2rem]">
+        <p class="text-red-400 font-bold uppercase tracking-widest text-xs">{{ error }}</p>
+      </div>
+
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div v-for="session in filteredSessions" :key="session.id" 
+             class="bg-[#0f1115] p-8 rounded-[2.5rem] border border-gray-900 hover:border-red-500 transition-all duration-500 group relative overflow-hidden shadow-2xl">
+          
+          <div class="flex justify-between items-start mb-6">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 bg-red-500 rounded-2xl flex items-center justify-center text-black font-black text-xl">
+                {{ (session.trainer_name || 'T').charAt(0) }}
+              </div>
+              <div>
+                <h4 class="font-black text-lg uppercase group-hover:text-red-500 transition-colors">{{ session.trainer_name }}</h4>
+                <p class="text-xs text-red-500 font-bold italic">{{ session.title }}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] text-gray-600 font-black uppercase">Harga</p>
+              <p class="text-sm font-bold text-white">{{ formatRupiah(session.price) }}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 mb-8 py-4 border-y border-white/5">
+            <div>
+              <p class="text-[9px] text-gray-600 font-black uppercase">Tanggal</p>
+              <p class="text-xs font-bold text-gray-300">📅 {{ formatDate(session.start_time) }}</p>
+            </div>
+            <div>
+              <p class="text-[9px] text-gray-600 font-black uppercase">Waktu</p>
+              <p class="text-xs font-bold text-gray-300">🕒 {{ formatTime(session.start_time) }}</p>
+            </div>
+            <div>
+              <p class="text-[9px] text-gray-600 font-black uppercase">Trainer</p>
+              <p class="text-xs font-bold text-gray-300">💪 {{ session.trainer_name }}</p>
+            </div>
+            <div>
+              <p class="text-[9px] text-gray-600 font-black uppercase">Status</p>
+              <span class="text-[9px] px-2 py-0.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded">{{ session.status }}</span>
+            </div>
+          </div>
+
+          <button @click="handleBooking(session.id)"
+                  :disabled="loadingBooking"
+                  class="w-full py-4 font-black uppercase text-xs tracking-widest rounded-2xl transition-all bg-red-500 text-black hover:bg-red-400 shadow-lg shadow-red-500/20">
+            <span v-if="loadingBooking">Memproses...</span>
+            <span v-else>Ambil Sesi →</span>
+          </button>
+        </div>
+
+        <div v-if="filteredSessions.length === 0" class="col-span-full text-center py-20 border border-dashed border-gray-800 rounded-[2rem]">
+          <p class="text-gray-600 font-bold uppercase tracking-widest text-xs">Tidak ada sesi ditemukan.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import DashboardSidebar from '../../components/DashboardSidebar.vue'
+import api from '../../utils/api'
+
+const sessions = ref([])
+const loading = ref(true)
+const error = ref('')
+const loadingBooking = ref(false)
+const searchQuery = ref('')
+
+const fetchData = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const response = await api.get('/sessions')
+    const data = response.data?.data || []
+    sessions.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    error.value = 'Gagal memuat data sesi'
+    console.error('Fetch error:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+const filteredSessions = computed(() => {
+  if (!sessions.value.length) return []
+  return sessions.value.filter(s => {
+    const name = (s.trainer_name || '').toLowerCase()
+    const title = (s.title || '').toLowerCase()
+    const query = searchQuery.value.toLowerCase()
+    return name.includes(query) || title.includes(query)
+  })
+})
+
+const formatRupiah = (price) => {
+  if (!price) return 'Rp0'
+  return `Rp${Number(price).toLocaleString('id-ID')}`
+}
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '--'
+  return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+const formatTime = (dateStr) => {
+  if (!dateStr) return '--:--'
+  return new Date(dateStr).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+}
+
+const handleBooking = async (sessionId) => {
+  if (loadingBooking.value) return
+  loadingBooking.value = true
+  try {
+    await api.post('/bookings', { session_id: sessionId })
+    alert('Booking berhasil!')
+    await fetchData()
+  } catch (err) {
+    alert(err.response?.data?.message || 'Gagal melakukan booking')
+  } finally {
+    loadingBooking.value = false
+  }
+}
+
+onMounted(fetchData)
+</script>
