@@ -37,15 +37,14 @@ async function attemptConnection(retries = 10, delay = 5000) {
             console.log('Database connected successfully');
             return;
         } catch (error) {
-            console.log('[DB] Connection attempt ' + (i + 1) + '/' + retries + ' failed:', error.message);
+            console.log('[DB] Attempt ' + (i + 1) + '/' + retries + ' failed:', error.message, error.stack || '');
             if (i < retries - 1) {
-                console.log('[DB] Retrying in ' + (delay / 1000) + ' seconds...');
+                console.log('[DB] Retrying in ' + (delay / 1000) + 's...');
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
         }
     }
-    console.error('[DB] All attempts failed. Will retry in 60 seconds...');
-    // Coba lagi 60 detik kemudian
+    console.error('[DB] All attempts failed. Will retry in 60s...');
     setTimeout(attemptConnection, 60000, retries, delay);
 }
 
