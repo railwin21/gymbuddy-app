@@ -10,7 +10,8 @@ const config = {
     password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
     database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'gymbuddy_database_1',
     port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306'),
-    connectionLimit: 10
+    connectionLimit: 10,
+    ssl: process.env.DB_SSL === 'true' ? true : false
 };
 
 console.log('[DB] Connecting to MySQL:', config.host + ':' + config.port + '/' + config.database);
