@@ -4,7 +4,7 @@ import helmet from 'helmet'
 import compression from 'compression'
 import { rateLimit } from 'express-rate-limit'
 import dotenv from 'dotenv'
-import {connectDB, isDBConnected, getLastDbError} from './src/config/db.js'
+import {connectDB, isDBConnected} from './src/config/db.js'
 
 import authRoutes from './src/routes/auth.routes.js'
 import userRoutes from './src/routes/user.routes.js'
