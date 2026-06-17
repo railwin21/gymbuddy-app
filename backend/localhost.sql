@@ -302,6 +302,13 @@ INSERT INTO `promo` (`kode`, `judul`, `deskripsi`, `tipe`, `nilai`, `min_booking
 ('FREEPASS', 'Free Session', 'Gratis 1 sesi untuk setiap 5 booking', 'nominal', 50000.00, 5, 1);
 
 -- ============================================================
+-- SEED DATA: Sample session (trainer_id=2 = Ahmad Fauzi)
+-- ============================================================
+INSERT INTO `session` (`title`, `deskripsi`, `trainer_id`, `start_time`, `end_time`, `price`, `status`, `max_participants`) VALUES
+('Private Gym Training', 'Sesi latihan pribadi 1-on-1 dengan trainer profesional. Cocok untuk pemula maupun lanjutan.', 2, DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 DAY + 1 HOUR), 75000.00, 'scheduled', 1),
+('Yoga & Fleksibilitas', 'Latihan yoga untuk meningkatkan fleksibilitas dan kekuatan inti tubuh.', 2, DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 3 DAY + 1 HOUR), 50000.00, 'scheduled', 5);
+
+-- ============================================================
 -- VIEWS (untuk memudahkan query)
 -- ============================================================
 
