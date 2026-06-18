@@ -2,6 +2,22 @@ import { getDBPool } from '../config/db.js';
 import { success, error } from '../utils/response.js';
 import cache from '../utils/cache.js';
 
+export const getPromoByCode = async (req, res) => {
+    try {
+        const { kode } = req.query;
+        if (!kode) return error(res, 'Kode promo wajib diisi', 400);
+        const db = await getDBPool();
+        const rows = await db.query(
+            'SELECT * FROM promo WHERE kode = ? AND is_active = 1 AND (tanggal_mulai IS NULL OR tanggal_mulai <= NOW()) AND (tanggal_selesai IS NULL OR tanggal_selesai >= NOW())',
+            [kode]
+        );
+        if (!rows[0]) return error(res, 'Kode promo tidak valid atau sudah kadaluarsa', 404);
+        return success(res, rows[0], 'Kode promo valid');
+    } catch (err) {
+        return error(res, 'Gagal memeriksa promo', 500);
+    }
+};
+
 export const getAllPromo = async (req, res) => {
     try {
         const cacheKey = 'promo_list';

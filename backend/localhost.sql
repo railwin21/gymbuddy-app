@@ -272,10 +272,12 @@ CREATE TABLE `diet_programs` (
 -- ============================================================
 -- SEED DATA: Admin default
 -- ============================================================
-INSERT INTO `user` (`nama`, `email`, `password`, `role`, `jenis_kelamin`, `no_telp`) VALUES
-('Admin GymBuddy', 'admin@gymbuddy.site', '$2b$10$8U5ecdrkOX6RpJ04X.E4LOV7VZDEVvtjzyFG1GHv20dVEGjbYHPDS', 'admin', 'L', '081234567890'),
-('Ahmad Fauzi', 'trainer@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567891'),
-('Siti Rahmawati', 'user@gymbuddy.site', '$2b$10$GtJBBDGfoRkW3JdlF6AY.ufoZcWfv/FMwW1zV3Uk/4oy5ZKdTbQai', 'customer', 'P', '081234567892');
+INSERT INTO `user` (`nama`, `email`, `password`, `role`, `jenis_kelamin`, `no_telp`, `kota`, `spesialisasi`, `bio`) VALUES
+('Admin GymBuddy', 'admin@gymbuddy.site', '$2b$10$8U5ecdrkOX6RpJ04X.E4LOV7VZDEVvtjzyFG1GHv20dVEGjbYHPDS', 'admin', 'L', '081234567890', 'Purwokerto', NULL, 'Admin Platform GymBuddy'),
+('Fadhel Setiawan', 'fadhel@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567893', 'Purwokerto', 'Hypertrophy Coach', 'Spesialis pembentukan otot dan program hypertrophy untuk hasil maksimal'),
+('Arif Rachman', 'arif@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567894', 'Purwokerto', 'Lose Weight Coach', 'Ahli program penurunan berat badan dengan pendekatan ilmiah dan terukur'),
+('Gusti Caesar Yuliawan', 'gusti@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567895', 'Purwokerto', 'Strength Coach', 'Pelatih strength training profesional dengan pengalaman lebih dari 5 tahun'),
+('Siti Rahmawati', 'user@gymbuddy.site', '$2b$10$GtJBBDGfoRkW3JdlF6AY.ufoZcWfv/FMwW1zV3Uk/4oy5ZKdTbQai', 'customer', 'P', '081234567892', 'Purwokerto', NULL, 'Member GymBuddy');
 
 -- ============================================================
 -- SEED DATA: FAQ default
@@ -305,8 +307,20 @@ INSERT INTO `promo` (`kode`, `judul`, `deskripsi`, `tipe`, `nilai`, `min_booking
 -- SEED DATA: Sample session (trainer_id=2 = Ahmad Fauzi)
 -- ============================================================
 INSERT INTO `session` (`title`, `deskripsi`, `trainer_id`, `start_time`, `end_time`, `price`, `status`, `max_participants`) VALUES
-('Private Gym Training', 'Sesi latihan pribadi 1-on-1 dengan trainer profesional. Cocok untuk pemula maupun lanjutan.', 2, DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 DAY + 1 HOUR), 75000.00, 'scheduled', 1),
-('Yoga & Fleksibilitas', 'Latihan yoga untuk meningkatkan fleksibilitas dan kekuatan inti tubuh.', 2, DATE_ADD(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 3 DAY + 1 HOUR), 50000.00, 'scheduled', 5);
+('Private Gym Training', 'Sesi latihan pribadi 1-on-1 dengan trainer profesional. Cocok untuk pemula maupun lanjutan.', 2, DATE_ADD(NOW(), INTERVAL 1 DAY), NOW() + INTERVAL 1 DAY + INTERVAL 1 HOUR, 75000.00, 'scheduled', 1),
+('Yoga & Fleksibilitas', 'Latihan yoga untuk meningkatkan fleksibilitas dan kekuatan inti tubuh.', 2, DATE_ADD(NOW(), INTERVAL 3 DAY), NOW() + INTERVAL 3 DAY + INTERVAL 1 HOUR, 50000.00, 'scheduled', 5),
+
+-- Sesi untuk Fadhel Setiawan (trainer_id=3)
+('Hypertrophy Program', 'Program hypertrophy intensif untuk membangun massa otot maksimal. Cocok untuk intermediate hingga advanced.', 3, DATE_ADD(NOW(), INTERVAL 2 DAY), NOW() + INTERVAL 2 DAY + INTERVAL 1 HOUR, 100000.00, 'scheduled', 1),
+('Arms & Shoulders Day', 'Fokus pada pembentukan lengan dan bahu dengan teknik isolasi terbaik.', 3, DATE_ADD(NOW(), INTERVAL 4 DAY), NOW() + INTERVAL 4 DAY + INTERVAL 1 HOUR, 85000.00, 'scheduled', 1),
+
+-- Sesi untuk Arif Rachman (trainer_id=4)
+('Weight Loss Bootcamp', 'Program penurunan berat badan intensif dengan HIIT dan cardio terstruktur.', 4, NOW() + INTERVAL 1 DAY + INTERVAL 2 HOUR, NOW() + INTERVAL 1 DAY + INTERVAL 3 HOUR, 90000.00, 'scheduled', 5),
+('Fat Burning Circuit', 'Latihan sirkuit pembakaran lemak full-body. Efektif untuk menurunkan berat badan.', 4, DATE_ADD(NOW(), INTERVAL 5 DAY), NOW() + INTERVAL 5 DAY + INTERVAL 1 HOUR, 80000.00, 'scheduled', 3),
+
+-- Sesi untuk Gusti Caesar (trainer_id=5)
+('Strength Foundation', 'Program dasar strength training untuk membangun kekuatan fundamental.', 5, NOW() + INTERVAL 3 DAY + INTERVAL 2 HOUR, NOW() + INTERVAL 3 DAY + INTERVAL 3 HOUR, 95000.00, 'scheduled', 1),
+('Powerlifting Prep', 'Persiapan teknik powerlifting: squat, bench press, deadlift dengan koreksi form detail.', 5, DATE_ADD(NOW(), INTERVAL 6 DAY), NOW() + INTERVAL 6 DAY + INTERVAL 2 HOUR, 120000.00, 'scheduled', 1);
 
 -- ============================================================
 -- VIEWS (untuk memudahkan query)

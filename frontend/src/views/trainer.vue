@@ -92,7 +92,7 @@
 
       <div class="p-5 text-center">
         <h3 class="text-lg font-semibold pb-2">Fadhel Setiawan</h3>
-        <p class="text-red-500 text-sm mb-4">Strength Coach</p>
+        <p class="text-red-500 text-sm mb-4">Hypertrophy Coach</p>
       </div>
     </div>
 
@@ -108,7 +108,7 @@
       </div>
 
       <div class="p-5 text-center">
-        <h3 class="text-lg font-semibold pb-2">M.Arif Rachman</h3>
+        <h3 class="text-lg font-semibold pb-2">Arif Rachman</h3>
         <p class="text-red-500 text-sm mb-4">Lose Weight Coach</p>
       </div>
     </div>
@@ -126,7 +126,7 @@
 
       <div class="p-5 text-center">
         <h3 class="text-lg font-semibold pb-2">Gusti Caesar Yuliawan</h3>
-        <p class="text-red-500 text-sm mb-4">Hypertrophy Coach</p>
+        <p class="text-red-500 text-sm mb-4">Strength Coach</p>
       </div>
     </div>
 

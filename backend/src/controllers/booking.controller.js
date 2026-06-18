@@ -153,7 +153,11 @@ export const updateBookingStatus = async (req, res) => {
 
 export const getMyBookings = async (req, res) => {
     try {
-        const member_id = req.user.id;
+        const member_id = req.user?.id;
+        if (!member_id) {
+            return error(res, 'User ID tidak ditemukan', 400);
+        }
+
         const db = await getDBPool();
 
         const rows = await db.query(
@@ -171,6 +175,7 @@ export const getMyBookings = async (req, res) => {
 
         return success(res, rows, 'Data booking berhasil diambil');
     } catch (err) {
+        console.error('[getMyBookings] Error:', err.message, err.stack);
         return error(res, 'Terjadi kesalahan server', 500);
     }
 };

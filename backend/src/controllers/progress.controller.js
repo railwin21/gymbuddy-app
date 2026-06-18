@@ -23,10 +23,10 @@ export const getMyProgress = async (req, res) => {
         const db = await getDBPool();
 
         const rows = await db.query(
-            `SELECT id, activity, duration, note, jam_nyatat as recorded_at 
+            `SELECT id, activity, duration, note, recorded_at 
              FROM progress 
              WHERE member_id = ? 
-             ORDER BY jam_nyatat DESC`,
+             ORDER BY recorded_at DESC`,
             [member_id]
         );
 

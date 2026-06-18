@@ -41,10 +41,13 @@ export const getAllArticles = async (req, res) => {
             db.query(countQuery, countParams),
             db.query(query, queryParams)
         ]);
-        
-        const total = countResult[0]?.total || 0;
+
+        // Handle both mysql2 and mariadb result formats
+        const countData = Array.isArray(countResult) ? countResult[0] : countResult;
+        const rowData = Array.isArray(rows) && rows.length > 0 && Array.isArray(rows[0]) ? rows[0] : rows;
+        const total = countData?.total || 0;
         res.setHeader('X-Total-Count', total);
-        res.json({ success: true, data: rows, total });
+        res.json({ success: true, data: rowData || [], total });
     } catch (err) { return error(res, 'Gagal mengambil artikel', 500); }
 };
 

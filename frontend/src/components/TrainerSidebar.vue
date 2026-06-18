@@ -3,8 +3,7 @@
     
     <div class="p-6">
       <router-link to="/" class="flex items-center gap-3">
-        <span class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center font-black text-white text-sm">GB</span> 
-        <span class="text-white font-bold">GymBuddy</span>
+        <img src="/src/assets/gymbuddy-logo.png" alt="GymBuddy" class="h-8 w-auto" />
       </router-link>
     </div>
     

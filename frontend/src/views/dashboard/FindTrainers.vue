@@ -1,8 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-black selection:bg-red-500 selection:text-black">
-    <DashboardSidebar />
-
-    <main class="flex-grow p-10 text-white overflow-y-auto">
+  <main class="p-10 text-white overflow-y-auto">
       <header class="mb-10">
         <div class="flex justify-between items-end">
           <div>
@@ -32,8 +29,17 @@
           
           <div class="flex justify-between items-start mb-6">
             <div class="flex items-center gap-4">
-              <div class="w-14 h-14 bg-red-500 rounded-2xl flex items-center justify-center text-black font-black text-xl">
-                {{ (session.trainer_name || 'T').charAt(0) }}
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden">
+                <img 
+                  v-if="session.trainer_photo"
+                  :src="photoBaseUrl + '/' + session.trainer_photo" 
+                  :alt="session.trainer_name"
+                  class="w-full h-full object-cover"
+                  @error="$event.target.style.display='none'"
+                />
+                <div v-if="!session.trainer_photo" class="w-full h-full bg-red-500 flex items-center justify-center text-black font-black text-xl">
+                  {{ (session.trainer_name || 'T').charAt(0) }}
+                </div>
               </div>
               <div>
                 <h4 class="font-black text-lg uppercase group-hover:text-red-500 transition-colors">{{ session.trainer_name }}</h4>
@@ -78,13 +84,14 @@
         </div>
       </div>
     </main>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import DashboardSidebar from '../../components/DashboardSidebar.vue'
 import api from '../../utils/api'
+
+// Base URL for photos (strip /api suffix)
+const photoBaseUrl = api.defaults.baseURL.replace(/\/api$/, '')
 
 const sessions = ref([])
 const loading = ref(true)

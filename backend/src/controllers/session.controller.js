@@ -16,7 +16,7 @@ export const getAllSessions = async (req, res) => {
         const db = await getDBPool();
         const rows = await db.query(
             `SELECT s.id, s.title, s.deskripsi, s.trainer_id, s.start_time, s.end_time, s.price, s.status,
-                    u.nama as trainer_name
+                    u.nama as trainer_name, u.foto as trainer_photo
              FROM session s
              JOIN user u ON s.trainer_id = u.id`
         );
@@ -39,7 +39,7 @@ export const getSessionById = async (req, res) => {
         const db = await getDBPool();
         const rows = await db.query(
             `SELECT s.id, s.title, s.deskripsi, s.trainer_id, s.start_time, s.end_time, s.price, s.status,
-                    u.nama as trainer_name
+                    u.nama as trainer_name, u.foto as trainer_photo
              FROM session s
              JOIN user u ON s.trainer_id = u.id
              WHERE s.id = ?`,
@@ -182,7 +182,7 @@ export const getUpcomingSessions = async (req, res) => {
         const db = await getDBPool();
         const rows = await db.query(
             `SELECT s.id, s.title, s.deskripsi, s.trainer_id, s.start_time, s.end_time, s.price, s.status,
-                    u.nama as trainer_name,
+                    u.nama as trainer_name, u.foto as trainer_photo,
                     (SELECT COUNT(*) FROM booking b WHERE b.session_id = s.id AND b.status = 'Confirmed') as total_bookings
              FROM session s
              JOIN user u ON s.trainer_id = u.id

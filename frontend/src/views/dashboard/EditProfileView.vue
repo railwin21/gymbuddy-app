@@ -1,8 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-[#0a0b10] text-white font-sans selection:bg-red-500 selection:text-black">
-    <DashboardSidebar />
-    
-    <main class="flex-grow p-6 lg:p-12 overflow-y-auto">
+  <main class="p-6 lg:p-12 overflow-y-auto">
       <div class="max-w-4xl mx-auto mb-10">
         <div class="flex items-center gap-6">
           <router-link 
@@ -93,13 +90,11 @@
         </div>
       </div>
     </main>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardSidebar from '../../components/DashboardSidebar.vue'
 import api from '../../utils/api'
 
 const router = useRouter()

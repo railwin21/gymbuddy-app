@@ -2,8 +2,7 @@
   <aside class="w-64 bg-[#0a0a0a] text-gray-400 flex flex-col min-h-screen border-r border-white/5 shadow-2xl shrink-0">
     <div class="p-6">
       <router-link to="/admin/dashboard" class="flex items-center gap-3">
-        <span class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center font-black text-white text-sm">GB</span>
-        <span class="text-white font-bold">Admin Panel</span>
+        <img src="/src/assets/gymbuddy-logo.png" alt="GymBuddy" class="h-8 w-auto" />
       </router-link>
     </div>
 

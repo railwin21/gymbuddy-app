@@ -48,18 +48,24 @@
           </div>
 
           <!-- Stats -->
-          <div class="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-white/5">
+          <div v-if="statsLoaded" class="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-white/5">
             <div>
-              <p class="text-3xl font-black text-white">50+</p>
+              <p class="text-3xl font-black text-white">{{ trainerCount }}+</p>
               <p class="text-gray-500 text-sm mt-1">Trainer Profesional</p>
             </div>
             <div>
-              <p class="text-3xl font-black text-white">500+</p>
+              <p class="text-3xl font-black text-white">{{ sessionCount }}+</p>
               <p class="text-gray-500 text-sm mt-1">Sesi Latihan</p>
             </div>
             <div>
-              <p class="text-3xl font-black text-white">98%</p>
+              <p class="text-3xl font-black text-white">{{ satisfactionRate }}%</p>
               <p class="text-gray-500 text-sm mt-1">Kepuasan Member</p>
+            </div>
+          </div>
+          <div v-else class="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-white/5">
+            <div v-for="i in 3" :key="i" class="animate-pulse">
+              <div class="h-9 w-16 bg-white/10 rounded-lg mb-2"></div>
+              <div class="h-4 w-24 bg-white/5 rounded"></div>
             </div>
           </div>
         </div>
@@ -150,6 +156,36 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import api from '../utils/api'
+
+const trainerCount = ref(0)
+const sessionCount = ref(0)
+const satisfactionRate = ref(98)
+const statsLoaded = ref(false)
+
+const fetchStats = async () => {
+  try {
+    const [trainerRes, sessionRes] = await Promise.all([
+      api.get('/trainers'),
+      api.get('/sessions')
+    ])
+    const t = trainerRes.data?.data?.length
+    const s = sessionRes.data?.data?.length
+    if (t) trainerCount.value = t
+    if (s) sessionCount.value = s
+    statsLoaded.value = true
+  } catch (e) {
+    console.warn('Gagal fetch stats homepage:', e.message)
+    // Fallback ke nilai database yang diketahui
+    trainerCount.value = 4
+    sessionCount.value = 8
+    statsLoaded.value = true
+  }
+}
+
+onMounted(fetchStats)
+
 const benefits = [
   { title: 'Trainer Profesional', desc: 'Terhubung dengan personal trainer berpengalaman di Purwokerto.' },
   { title: 'Booking Mudah', desc: 'Atur jadwal latihan sesuai waktu luang kamu dengan sistem booking online.' },

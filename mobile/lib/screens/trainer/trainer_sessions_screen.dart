@@ -1,0 +1,230 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../../services/api_service.dart';
+import '../../services/auth_provider.dart';
+
+class TrainerSessionsScreen extends ConsumerStatefulWidget {
+  const TrainerSessionsScreen({super.key});
+
+  @override
+  ConsumerState<TrainerSessionsScreen> createState() => _TrainerSessionsScreenState();
+}
+
+class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
+  final _api = ApiService();
+  List<dynamic> _sessions = [];
+  bool _loading = true;
+  String? _error;
+  String _filter = 'all';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSessions();
+  }
+
+  Future<void> _loadSessions() async {
+    setState(() => _loading = true);
+    try {
+      final res = await _api.getSessions(limit: 50);
+      final user = ref.read(authProvider).user;
+      final userId = user?['id']?.toString();
+      final allSessions = (res['data'] as List?) ?? [];
+      setState(() {
+        _sessions = allSessions.where((s) =>
+          s['trainer_id']?.toString() == userId
+        ).toList();
+        _error = null;
+      });
+    } catch (e) {
+      setState(() => _error = 'Gagal memuat sesi');
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  List<dynamic> get _filteredSessions {
+    if (_filter == 'all') return _sessions;
+    return _sessions.where((s) => s['status'] == _filter).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Kelola Sesi')),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                // Filter chips
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildFilterChip('Semua', 'all'),
+                        const SizedBox(width: 8),
+                        _buildFilterChip('Terjadwal', 'scheduled'),
+                        const SizedBox(width: 8),
+                        _buildFilterChip('Berlangsung', 'ongoing'),
+                        const SizedBox(width: 8),
+                        _buildFilterChip('Selesai', 'completed'),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Content
+                Expanded(child: _buildContent(theme)),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, String value) {
+    final isActive = _filter == value;
+    return GestureDetector(
+      onTap: () => setState(() => _filter = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive ? Theme.of(context).colorScheme.primary : Colors.grey[200],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : Colors.grey[700],
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(ThemeData theme) {
+    if (_error != null) {
+      return Center(child: Text(_error!, style: TextStyle(color: Colors.red[700])));
+    }
+
+    final filtered = _filteredSessions;
+
+    if (filtered.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.event_busy, size: 48, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text('Tidak ada sesi', style: TextStyle(color: Colors.grey[500])),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _loadSessions,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          final session = filtered[index];
+          return _buildSessionCard(session, theme);
+        },
+      ),
+    );
+  }
+
+  Widget _buildSessionCard(dynamic session, ThemeData theme) {
+    final title = session['title'] ?? 'Sesi';
+    final price = session['price'] ?? 0;
+    final status = session['status'] ?? 'scheduled';
+    final startTime = session['start_time'] != null
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(session['start_time']))
+        : '--';
+    final endTime = session['end_time'] != null
+        ? DateFormat('HH:mm').format(DateTime.parse(session['end_time']))
+        : '--';
+    final bookings = session['total_bookings'] ?? session['totalBookings'] ?? 0;
+
+    MaterialColor statusColor;
+    String statusLabel;
+    switch (status) {
+      case 'scheduled':
+        statusColor = Colors.blue;
+        statusLabel = 'Terjadwal';
+        break;
+      case 'ongoing':
+        statusColor = Colors.green;
+        statusLabel = 'Berlangsung';
+        break;
+      case 'completed':
+        statusColor = Colors.grey;
+        statusLabel = 'Selesai';
+        break;
+      default:
+        statusColor = Colors.orange;
+        statusLabel = status;
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: statusColor[50],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: statusColor[200]!),
+                  ),
+                  child: Text(statusLabel, style: TextStyle(color: statusColor[700], fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
+                const SizedBox(width: 4),
+                Text(startTime, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                if (endTime != '--') ...[
+                  const SizedBox(width: 4),
+                  Text('- $endTime', style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                ],
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Icons.people, size: 14, color: Colors.grey[600]),
+                const SizedBox(width: 4),
+                Text('$bookings booking', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                const Spacer(),
+                Text(
+                  'Rp${NumberFormat('#,###', 'id_ID').format(num.tryParse(price.toString()) ?? 0)}',
+                  style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

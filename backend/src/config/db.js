@@ -3,6 +3,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Ensure BigInt values are serializable to JSON (for mariadb driver compatibility)
+if (typeof BigInt !== 'undefined' && !BigInt.prototype.toJSON) {
+  BigInt.prototype.toJSON = function() { return Number(this); };
+}
+
 // Support both local .env (DB_HOST, etc.) and Railway (MYSQLHOST, etc.)
 const config = {
     host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
@@ -11,6 +16,7 @@ const config = {
     database: process.env.MYSQLDATABASE || process.env.DB_NAME || 'gymbuddy_database_1',
     port: parseInt(process.env.MYSQLPORT || process.env.DB_PORT || '3306'),
     connectionLimit: 10,
+    insertIdAsNumber: true,
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
 };
 

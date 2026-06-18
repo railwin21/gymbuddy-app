@@ -1,8 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-[#0a0b10]">
-    <DashboardSidebar />
-
-    <main class="flex-grow p-8 text-white">
+  <main class="p-8 text-white">
       <div class="bg-[#161920] rounded-[2rem] p-8 border border-gray-900 mb-8 relative overflow-hidden">
         <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
           <div class="w-24 h-24 bg-red-500 rounded-2xl flex items-center justify-center text-black font-black text-3xl uppercase">
@@ -33,12 +30,10 @@
         </div>
       </div>
     </main>
-  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import DashboardSidebar from '../../components/DashboardSidebar.vue'
 import api from '../../utils/api'
 
 const user = ref({ id: '', nama: '', email: '', role: '', kota: '', propinsi: '' })

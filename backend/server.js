@@ -21,6 +21,7 @@ import promoRoutes from './src/routes/promo.routes.js'
 import faqRoutes from './src/routes/faq.routes.js'
 import notificationsRoutes from './src/routes/notifications.routes.js'
 import bannersRoutes from './src/routes/banners.routes.js'
+import uploadRoutes from './src/routes/upload.routes.js'
 import errorMiddleware from './src/middleware/Error.Middleware.js'
 
 dotenv.config()
@@ -97,6 +98,10 @@ app.use('/api/promo', promoRoutes)
 app.use('/api/faq', faqRoutes)
 app.use('/api/notifications', notificationsRoutes)
 app.use('/api/banners', bannersRoutes)
+app.use('/api/upload', uploadRoutes)
+
+// Static file serving untuk uploads
+app.use('/uploads', express.static('uploads'))
 
 // Health check
 app.get('/api/health', (req, res) => {

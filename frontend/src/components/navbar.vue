@@ -21,9 +21,7 @@ const navLinks = [
         
         <!-- Logo -->
         <router-link to="/" class="flex items-center gap-2 group">
-          <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center font-black text-white text-sm group-hover:scale-110 transition-transform">
-            GB
-          </div>
+          <img src="/src/assets/gymbuddy-logo.png" alt="GymBuddy" class="h-8 w-auto group-hover:scale-110 transition-transform" />
           <span class="text-white font-bold text-lg tracking-tight">GymBuddy</span>
         </router-link>
 

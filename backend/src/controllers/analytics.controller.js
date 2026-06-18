@@ -50,6 +50,28 @@ export const getBookingStats = async (req, res) => {
     }
 };
 
+export const getDashboardStats = async (req, res) => {
+    try {
+        const db = await getDBPool();
+        const [userCount, sessionCount, bookingCount, recentBookings, recentUsers] = await Promise.all([
+            db.query('SELECT COUNT(id) as count FROM user'),
+            db.query('SELECT COUNT(id) as count FROM session'),
+            db.query('SELECT COUNT(id) as count FROM booking'),
+            db.query('SELECT b.id, b.status, b.payment_status, b.payment_amount, b.datetime_created, u.nama as member_name, s.title as session_title FROM booking b JOIN user u ON b.member_id = u.id JOIN session s ON b.session_id = s.id ORDER BY b.datetime_created DESC LIMIT 5'),
+            db.query('SELECT id, nama, email, role, created_at FROM user ORDER BY created_at DESC LIMIT 5')
+        ]);
+        return success(res, {
+            totalUsers: userCount[0]?.count || 0,
+            totalSessions: sessionCount[0]?.count || 0,
+            totalBookings: bookingCount[0]?.count || 0,
+            recentBookings: recentBookings || [],
+            recentUsers: recentUsers || []
+        }, 'Data dashboard berhasil diambil');
+    } catch (err) {
+        return error(res, 'Gagal mengambil data dashboard', 500);
+    }
+};
+
 export const getSessionStats = async (req, res) => {
     try {
         const cacheKey = 'session_stats';

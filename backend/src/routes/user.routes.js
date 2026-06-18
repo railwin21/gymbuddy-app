@@ -14,6 +14,8 @@ router.post('/register/trainer', registerTrainer);
 // Protected registration (hanya admin yang bisa buat admin baru)
 router.post('/register/admin', authMiddleware, adminReq, registerAdmin);
 
+router.get('/profile', authMiddleware, (req, res) => { req.params = {...req.params, id: req.user.id}; getUserById(req, res); });
+router.put('/profile', authMiddleware, (req, res) => { req.params = {...req.params, id: req.user.id}; updateUser(req, res); });
 router.get('/:id', authMiddleware, getUserById);
 router.put('/:id', authMiddleware, updateUser);
 router.get('/email/:email', authMiddleware, adminReq, getUserByEmail);

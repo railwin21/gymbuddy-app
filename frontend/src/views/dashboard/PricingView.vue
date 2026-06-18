@@ -1,7 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-black">
-    <DashboardSidebar />
-    <main class="flex-grow p-10 text-white overflow-y-auto">
+  <main class="p-10 text-white overflow-y-auto">
       <div class="text-center mb-12">
         <h2 class="text-4xl font-black uppercase text-white mb-4">Level Up Your Fitness Game</h2>
         <p class="text-gray-400">Unlock exclusive features and priority access to top trainers.</p>
@@ -92,9 +90,7 @@
       <p class="text-center text-[10px] text-gray-700 uppercase tracking-[0.3em] pb-10">© 2026 GymBuddy. All rights reserved.</p>
 
     </main>
-  </div>
 </template>
 
 <script setup>
-import DashboardSidebar from '../../components/DashboardSidebar.vue'
 </script>

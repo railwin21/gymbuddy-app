@@ -1,8 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-[#0a0a0a]">
-    <DashboardSidebar class="fixed inset-y-0 left-0 z-50" />
-
-    <main class="flex-grow p-8 text-white overflow-y-auto">
+  <main class="p-8 text-white overflow-y-auto">
       <div class="p-8 lg:p-12 max-w-6xl mx-auto space-y-10">
         
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -22,7 +19,15 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div v-if="loading" class="flex justify-center py-10">
+          <div class="animate-pulse text-red-500 font-black uppercase tracking-widest text-xs">Memuat data...</div>
+        </div>
+
+        <div v-else-if="error" class="text-center py-10 border border-dashed border-gray-800 rounded-2xl">
+          <p class="text-red-400 font-bold uppercase tracking-widest text-xs">{{ error }}</p>
+        </div>
+
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div v-for="stat in summaryStats" :key="stat.label" 
                class="p-6 rounded-2xl bg-[#111111] border border-gray-900 hover:border-red-500/50 transition-all group">
             <div :class="`text-4xl font-black mb-1 ${stat.textColor} `">
@@ -46,32 +51,22 @@
                 <div class="space-y-2">
                   <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">Nama Latihan</label>
                   <input
-                    v-model="newWorkout.exercise"
+                    v-model="newWorkout.activity"
                     type="text"
                     placeholder="E.g. Bench Press"
                     class="w-full px-5 py-4 rounded-xl bg-black border border-gray-800 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
                     required
                   />
                 </div>
-                <div class="grid grid-cols-3 gap-4">
-                  <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">Sets</label>
-                    <input v-model.number="newWorkout.sets" type="number" class="input-field" required />
-                  </div>
-                  <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">Reps</label>
-                    <input v-model.number="newWorkout.reps" type="number" class="input-field" required />
-                  </div>
-                  <div class="space-y-2">
-                    <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">Kg</label>
-                    <input v-model.number="newWorkout.weight" type="number" class="input-field" required />
-                  </div>
+                <div class="space-y-2">
+                  <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">Durasi (menit)</label>
+                  <input v-model.number="newWorkout.duration" type="number" placeholder="60" class="input-field" required />
                 </div>
               </div>
               
               <div class="space-y-2">
                 <label class="text-[10px] font-black uppercase text-gray-500 tracking-widest ml-1">Catatan Tambahan</label>
-                <input v-model="newWorkout.notes" type="text" placeholder="Grip lebih lebar, terasa ringan..." class="w-full px-5 py-4 rounded-xl bg-black border border-gray-800 text-white" />
+                <input v-model="newWorkout.note" type="text" placeholder="Grip lebih lebar, terasa ringan..." class="w-full px-5 py-4 rounded-xl bg-black border border-gray-800 text-white" />
               </div>
 
               <div class="flex gap-4 pt-4">
@@ -100,19 +95,15 @@
                 </div>
                 <div>
                   <div class="flex items-center gap-3 mb-1">
-                    <h3 class="font-bold text-xl text-white uppercase  tracking-tight">{{ workout.exercise }}</h3>
-                    <span class="text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-500 uppercase tracking-widest">{{ workout.date }}</span>
+                    <h3 class="font-bold text-xl text-white uppercase  tracking-tight">{{ workout.activity }}</h3>
+                    <span class="text-[10px] font-bold bg-white/5 border border-white/10 px-2 py-1 rounded text-gray-500 uppercase tracking-widest">{{ formatDate(workout.recorded_at) }}</span>
                   </div>
                   <div class="flex items-center gap-6 text-sm">
                     <div class="flex items-center gap-2">
-                      <span class="text-gray-500 uppercase text-[10px] font-black">Volume:</span>
-                      <span class="text-white font-bold">{{ workout.sets }} <span class="text-gray-600">×</span> {{ workout.reps }}</span>
+                      <span class="text-gray-500 uppercase text-[10px] font-black">Durasi:</span>
+                      <span class="text-white font-bold">{{ workout.duration }} <span class="text-gray-600">menit</span></span>
                     </div>
-                    <div class="flex items-center gap-2">
-                      <span class="text-gray-500 uppercase text-[10px] font-black">Beban:</span>
-                      <span class="text-red-500 font-black">{{ workout.weight }} KG</span>
-                    </div>
-                    <p v-if="workout.notes" class="text-gray-600  text-xs ml-2 border-l border-gray-800 pl-3">"{{ workout.notes }}"</p>
+                    <p v-if="workout.note" class="text-gray-600 text-xs ml-2 border-l border-gray-800 pl-3">"{{ workout.note }}"</p>
                   </div>
                 </div>
               </div>
@@ -127,43 +118,71 @@
         </div>
       </div>
     </main>
-  </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import DashboardSidebar from '../../components/DashboardSidebar.vue'
+import { ref, computed, onMounted } from 'vue'
 import { PlusIcon, TrashIcon, DumbbellIcon } from 'lucide-vue-next'
+import api from '../../utils/api'
 
 const showAddForm = ref(false)
-const workouts = ref([
-  { id: 1, date: "2026-04-14", exercise: "Bench Press", sets: 4, reps: 10, weight: 85, notes: "Felt strong" },
-  { id: 2, date: "2026-04-14", exercise: "Squats", sets: 4, reps: 8, weight: 100, notes: "Good depth" }
-])
+const workouts = ref([])
+const loading = ref(true)
+const error = ref('')
 
-const newWorkout = ref({ exercise: "", sets: null, reps: null, weight: null, notes: "" })
+const newWorkout = ref({ activity: "", duration: 30, note: "" })
 
 const summaryStats = computed(() => [
   { label: "Latihan Hari Ini", value: workouts.value.length, textColor: "text-red-500" },
-  { label: "Total Sets", value: workouts.value.reduce((sum, w) => sum + w.sets, 0), textColor: "text-white" },
-  { label: "Day Streak", value: 12, textColor: "text-white" },
-  { label: "Total Workouts", value: 42, textColor: "text-white" }
+  { label: "Total Durasi", value: workouts.value.reduce((sum, w) => sum + (Number(w.duration) || 0), 0) + ' menit', textColor: "text-white" },
+  { label: "Day Streak", value: 1, textColor: "text-white" },
+  { label: "Total Workouts", value: workouts.value.length, textColor: "text-white" }
 ])
 
-const handleAddWorkout = () => {
-  const payload = {
-    id: Date.now(),
-    date: new Date().toISOString().split("T")[0],
-    ...newWorkout.value
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '--'
+
+const fetchProgress = async () => {
+  loading.value = true
+  try {
+    // Gunakan endpoint /my untuk mengambil progress milik user yang login
+    const res = await api.get('/progress/my')
+    let data = res.data?.data || []
+    workouts.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    error.value = 'Gagal memuat data progress'
+    console.error('Progress fetch error:', err)
+  } finally {
+    loading.value = false
   }
-  workouts.value.unshift(payload)
-  newWorkout.value = { exercise: "", sets: null, reps: null, weight: null, notes: "" }
-  showAddForm.value = false
 }
 
-const handleDeleteWorkout = (id) => {
-  workouts.value = workouts.value.filter(w => w.id !== id)
+const handleAddWorkout = async () => {
+  try {
+    const payload = {
+      activity: newWorkout.value.activity,
+      duration: Number(newWorkout.value.duration) || 30,
+      note: newWorkout.value.note || ''
+    }
+    const res = await api.post('/progress', payload)
+    await fetchProgress()
+    newWorkout.value = { activity: "", duration: 30, note: "" }
+    showAddForm.value = false
+  } catch (err) {
+    alert('Gagal simpan: ' + (err.response?.data?.message || 'Error server'))
+  }
 }
+
+const handleDeleteWorkout = async (id) => {
+  if (!confirm('Yakin ingin menghapus data ini?')) return
+  try {
+    await api.delete(`/progress/${id}`)
+    workouts.value = workouts.value.filter(w => w.id !== id)
+  } catch (err) {
+    alert('Gagal hapus: ' + (err.response?.data?.message || 'Error server'))
+  }
+}
+
+onMounted(fetchProgress)
 </script>
 
 <style scoped>

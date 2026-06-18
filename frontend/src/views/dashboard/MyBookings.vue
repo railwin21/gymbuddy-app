@@ -1,8 +1,5 @@
 <template>
-  <div class="flex min-h-screen bg-black selection:bg-red-500 selection:text-white">
-    <DashboardSidebar />
-
-    <main class="flex-grow p-10 text-white overflow-y-auto">
+  <main class="p-10 text-white overflow-y-auto">
       <header class="mb-10">
         <h2 class="text-3xl font-black uppercase tracking-tighter text-white">Booking Saya</h2>
         <p class="text-gray-500 text-sm mt-1">Kelola sesi latihan dan lakukan pembayaran.</p>
@@ -41,8 +38,17 @@
             <div v-for="booking in activeBookings" :key="booking.booking_id" 
                  class="bg-[#0f1115] p-5 rounded-3xl border border-gray-900 hover:border-red-500/20 transition-all group flex items-center justify-between">
               <div class="flex items-center gap-5">
-                <div class="w-12 h-12 bg-red-500 rounded-2xl flex items-center justify-center text-white font-black text-sm uppercase">
-                  {{ (booking.trainer_name || 'T').charAt(0) }}
+                <div class="w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center">
+                  <img 
+                    v-if="booking.trainer_photo"
+                    :src="photoBaseUrl + '/' + booking.trainer_photo"
+                    :alt="booking.trainer_name"
+                    class="w-full h-full object-cover"
+                    @error="$event.target.style.display='none'"
+                  />
+                  <div v-if="!booking.trainer_photo" class="w-full h-full bg-red-500 flex items-center justify-center text-white font-black text-sm uppercase">
+                    {{ (booking.trainer_name || 'T').charAt(0) }}
+                  </div>
                 </div>
                 <div>
                   <h4 class="font-bold text-white group-hover:text-red-500 transition-colors uppercase">
@@ -112,9 +118,8 @@
         </section>
       </div>
     </main>
-  </div>
 
-  <!-- Toast -->
+<!-- Toast -->
   <Transition name="toast">
     <div v-if="toast.show" 
          :class="toast.type === 'success' ? 'bg-red-500' : 'bg-red-500/80'"
@@ -127,8 +132,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import api from '../../utils/api'
-import DashboardSidebar from '../../components/DashboardSidebar.vue'
 
+// Base URL for photos (strip /api suffix)
+const photoBaseUrl = api.defaults.baseURL.replace(/\/api$/, '')
 const bookings = ref([])
 const loading = ref(true)
 const error = ref('')
