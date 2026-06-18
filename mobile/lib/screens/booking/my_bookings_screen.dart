@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/api_service.dart';
 import '../payment/payment_screen.dart';
 
@@ -111,6 +112,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Booking Saya'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: _buildContent(theme),
     );
@@ -258,6 +263,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
         ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(booking['start_time']))
         : '--';
     final trainerName = booking['trainer_name'] ?? 'Trainer';
+    final trainerPhoto = booking['trainer_photo'] ?? '';
     final status = booking['status'] ?? '';
     final paymentStatus = booking['payment_status'] ?? '';
     final paymentAmount = booking['payment_amount'] ?? 0;
@@ -287,11 +293,40 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Details
+            // Details with trainer photo
             Row(
               children: [
-                const Icon(Icons.person, size: 14, color: Colors.grey),
-                const SizedBox(width: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: trainerPhoto.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: '${ApiService.baseUrl.replaceAll('/api', '')}/$trainerPhoto',
+                          width: 22,
+                          height: 22,
+                          fit: BoxFit.cover,
+                          placeholder: (ctx, url) => Container(width: 22, height: 22, color: Colors.grey[200]),
+                          errorWidget: (ctx, url, err) => Container(
+                            width: 22,
+                            height: 22,
+                            color: theme.colorScheme.primary.withAlpha(25),
+                            child: Center(
+                              child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withAlpha(25),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Center(
+                            child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 6),
                 Text(trainerName, style: const TextStyle(color: Colors.grey, fontSize: 12)),
                 const SizedBox(width: 12),
                 const Icon(Icons.access_time, size: 14, color: Colors.grey),

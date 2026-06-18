@@ -12,10 +12,12 @@ export const getAllBookings = async (req, res) => {
         const rows = await db.query(
             `SELECT b.id, b.session_id, b.member_id, b.status, b.payment_status, b.payment_method,
                     b.payment_amount, b.payment_date, b.midtrans_token, b.datetime_created,
-                    u.nama as member_name, s.title as session_title, s.price
+                    u.nama as member_name, s.title as session_title, s.price,
+                    tr.nama as trainer_name, tr.foto as trainer_photo
              FROM booking b
              JOIN user u ON b.member_id = u.id
-             JOIN session s ON b.session_id = s.id`
+             JOIN session s ON b.session_id = s.id
+             JOIN user tr ON s.trainer_id = tr.id`
         );
 
         cache.set(cacheKey, rows, 300);
@@ -32,10 +34,12 @@ export const getBookingById = async (req, res) => {
         const rows = await db.query(
             `SELECT b.id, b.session_id, b.member_id, b.status, b.payment_status, b.payment_method,
                     b.payment_amount, b.payment_date, b.midtrans_token, b.datetime_created,
-                    u.nama as member_name, s.title as session_title
+                    u.nama as member_name, s.title as session_title,
+                    tr.nama as trainer_name, tr.foto as trainer_photo
              FROM booking b
              JOIN user u ON b.member_id = u.id
              JOIN session s ON b.session_id = s.id
+             JOIN user tr ON s.trainer_id = tr.id
              WHERE b.id = ?`,
             [id]
         );
@@ -164,7 +168,7 @@ export const getMyBookings = async (req, res) => {
             `SELECT b.id as booking_id, b.status, b.payment_status, b.payment_method,
                     b.payment_amount, b.payment_date, b.midtrans_token,
                     s.title as session_title, s.start_time, s.end_time, s.price,
-                    u.nama as trainer_name
+                    u.nama as trainer_name, u.foto as trainer_photo
              FROM booking b
              JOIN session s ON b.session_id = s.id
              JOIN user u ON s.trainer_id = u.id

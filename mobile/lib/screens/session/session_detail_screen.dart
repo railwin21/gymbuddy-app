@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/api_service.dart';
 
 class SessionDetailScreen extends ConsumerStatefulWidget {
@@ -99,6 +100,8 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                           const Divider(),
                           _infoRow(Icons.person, 'Trainer', _session?['trainer_name'] ?? ''),
                           const Divider(),
+                          _trainerPhotoRow(_session?['trainer_photo'] ?? '', _session?['trainer_name'] ?? ''),
+                          const Divider(),
                           _infoRow(Icons.people, 'Max Peserta', '${_session?['max_participants'] ?? 1} orang'),
                           const Divider(),
                           _infoRow(Icons.money, 'Harga', 'Rp${_formatRupiah(_session?['price'] ?? 0)}'),
@@ -144,6 +147,50 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
           const SizedBox(width: 12),
           SizedBox(width: 100, child: Text(label, style: TextStyle(color: Colors.grey[600]))),
           Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w500))),
+        ],
+      ),
+    );
+  }
+
+  Widget _trainerPhotoRow(String trainerPhoto, String trainerName) {
+    final baseUrl = ApiService.baseUrl.replaceAll('/api', '');
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: trainerPhoto.isNotEmpty
+                ? CachedNetworkImage(
+                    imageUrl: '$baseUrl/$trainerPhoto',
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    placeholder: (ctx, url) => Container(width: 40, height: 40, color: Colors.grey[200]),
+                    errorWidget: (ctx, url, err) => Container(
+                      width: 40,
+                      height: 40,
+                      color: Theme.of(context).colorScheme.primary.withAlpha(25),
+                      child: Center(
+                        child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 16)),
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary.withAlpha(25),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 16)),
+                    ),
+                  ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(width: 100, child: Text('Foto Trainer', style: TextStyle(color: Colors.grey[600]))),
+          Expanded(child: Text(trainerName, style: const TextStyle(fontWeight: FontWeight.w500))),
         ],
       ),
     );
