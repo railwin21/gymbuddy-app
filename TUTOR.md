@@ -457,7 +457,7 @@ git push origin main
 | **Backend APIs** | ✅ | All endpoints responding |
 | **Backend Railway** | ✅ | Deployed, DB connected |
 | **Frontend Vercel** | ✅ | Deployed, live |
-| **Android APK** | ✅ **Build success** | GymBuddy-v1.0.0.apk (56MB) tersedia di GitHub Release |
+| **Android APK** | ✅ **Build success** | GymBuddy-v1.0.1.apk (53MB) tersedia di GitHub Release |
 
 ---
 
@@ -472,5 +472,5 @@ git push origin main
 
 > **Dibuat oleh:** Arif Rachman  
 > **Email:** 2311102300@ittelkom-pwt.ac.id  
-> **Versi:** 1.0.0  
+> **Versi:** 1.0.1  
 > **Dokumen ini:** TUTOR.md — Panduan Lengkap GymBuddy
