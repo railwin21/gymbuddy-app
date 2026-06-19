@@ -31,21 +31,21 @@
           <form @submit.prevent="handleRegister" class="space-y-6" novalidate>
             <div class="space-y-2">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Nama Lengkap</label>
-              <input v-model="formData.nama" type="text" placeholder="Masukkan nama lengkap"
+              <input v-model="formData.nama" type="text" autocomplete="name" placeholder="Masukkan nama lengkap"
                      :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.nama ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
               <p v-if="errors.nama" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.nama }}</p>
             </div>
 
             <div class="space-y-2">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Email Address</label>
-              <input v-model="formData.email" type="email" placeholder="nama@email.com"
+              <input v-model="formData.email" type="email" autocomplete="email" placeholder="nama@email.com"
                      :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.email ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
               <p v-if="errors.email" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.email }}</p>
             </div>
 
             <div class="space-y-2">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Password</label>
-              <input v-model="formData.password" type="password" placeholder="Minimal 6 karakter"
+              <input v-model="formData.password" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter"
                      :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.password ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
               <p v-if="errors.password" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.password }}</p>
             </div>
@@ -53,13 +53,13 @@
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
                 <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Provinsi</label>
-                <input v-model="formData.propinsi" type="text" placeholder="Jawa Tengah"
+                <input v-model="formData.propinsi" type="text" autocomplete="address-level1" placeholder="Jawa Tengah"
                        :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.propinsi ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
                 <p v-if="errors.propinsi" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.propinsi }}</p>
               </div>
               <div class="space-y-2">
                 <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Kota</label>
-                <input v-model="formData.kota" type="text" placeholder="Purwokerto"
+                <input v-model="formData.kota" type="text" autocomplete="address-level2" placeholder="Purwokerto"
                        :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.kota ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
                 <p v-if="errors.kota" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.kota }}</p>
               </div>

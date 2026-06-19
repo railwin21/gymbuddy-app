@@ -10,7 +10,7 @@
 
     <!-- Search & Filter -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <input v-model="search" type="text" placeholder="Cari nama atau email..." @input="fetchData"
+      <input v-model="search" type="search" autocomplete="search" placeholder="Cari nama atau email..." @input="fetchData"
              class="bg-[#0f1115] border border-gray-800 p-3 rounded-xl text-sm focus:border-red-500 outline-none transition-all">
       <select v-model="roleFilter" @change="fetchData"
               class="bg-[#0f1115] border border-gray-800 p-3 rounded-xl text-sm text-gray-400 outline-none">

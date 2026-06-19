@@ -30,14 +30,14 @@
         <h2 class="text-xl font-black mb-6">{{ editing ? 'Edit FAQ' : 'Buat FAQ' }}</h2>
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Pertanyaan</label>
-            <input v-model="form.pertanyaan" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
+            <input v-model="form.pertanyaan" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
           <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Jawaban</label>
-            <textarea v-model="form.jawaban" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-24" required></textarea></div>
+            <textarea v-model="form.jawaban" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-24" required></textarea></div>
           <div class="grid grid-cols-2 gap-4">
             <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Kategori</label>
-              <input v-model="form.kategori" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none"></div>
+              <input v-model="form.kategori" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none"></div>
             <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Urutan</label>
-              <input v-model.number="form.urutan" type="number" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none"></div>
+              <input v-model.number="form.urutan" type="number" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none"></div>
           </div>
           <div class="flex gap-3 pt-4">
             <button type="button" @click="showForm = false" class="flex-1 py-4 bg-white/5 rounded-xl text-xs font-black uppercase border border-gray-800">Batal</button>

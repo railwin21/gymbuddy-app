@@ -39,7 +39,7 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Kode</label>
-              <input v-model="form.kode" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
+              <input v-model="form.kode" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
             <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Tipe</label>
               <select v-model="form.tipe" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none">
                 <option value="persen">Persen (%)</option>
@@ -47,12 +47,12 @@
               </select></div>
           </div>
           <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Judul</label>
-            <input v-model="form.judul" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
+            <input v-model="form.judul" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
           <div class="grid grid-cols-2 gap-4">
             <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Nilai</label>
-              <input v-model.number="form.nilai" type="number" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
+              <input v-model.number="form.nilai" type="number" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required></div>
             <div><label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Min. Booking</label>
-              <input v-model.number="form.min_booking" type="number" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none"></div>
+              <input v-model.number="form.min_booking" type="number" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none"></div>
           </div>
           <div class="flex gap-3 pt-4">
             <button type="button" @click="showForm = false" class="flex-1 py-4 bg-white/5 rounded-xl text-xs font-black uppercase border border-gray-800">Batal</button>

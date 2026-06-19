@@ -49,24 +49,24 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Judul</label>
-            <input v-model="form.judul" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none">
+            <input v-model="form.judul" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none">
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Deskripsi</label>
-            <textarea v-model="form.deskripsi" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-24"></textarea>
+            <textarea v-model="form.deskripsi" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-24"></textarea>
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">URL Gambar *</label>
-            <input v-model="form.gambar" type="url" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required placeholder="https://example.com/gambar.jpg">
+            <input v-model="form.gambar" type="url" autocomplete="url" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required placeholder="https://example.com/gambar.jpg">
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Link Tujuan (opsional)</label>
-            <input v-model="form.link" type="url" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" placeholder="https://gymbuddy.site/...">
+            <input v-model="form.link" type="url" autocomplete="url" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" placeholder="https://gymbuddy.site/...">
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Urutan</label>
-              <input v-model.number="form.urutan" type="number" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none">
+              <input v-model.number="form.urutan" type="number" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm outline-none">
             </div>
             <div>
               <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Status</label>

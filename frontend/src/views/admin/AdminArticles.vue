@@ -45,11 +45,11 @@
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 mb-2 block">Judul</label>
-            <input v-model="form.title" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required>
+            <input v-model="form.title" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required>
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 mb-2 block">Slug (URL)</label>
-            <input v-model="form.slug" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required>
+            <input v-model="form.slug" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -72,11 +72,11 @@
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 mb-2 block">Ringkasan</label>
-            <textarea v-model="form.excerpt" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-20"></textarea>
+            <textarea v-model="form.excerpt" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-20"></textarea>
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 mb-2 block">Konten</label>
-            <textarea v-model="form.content" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-40" required></textarea>
+            <textarea v-model="form.content" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-40" required></textarea>
           </div>
           <div class="flex gap-3 pt-4">
             <button type="button" @click="showForm = false" class="flex-1 py-4 bg-white/5 rounded-xl text-xs font-black uppercase border border-gray-800">Batal</button>

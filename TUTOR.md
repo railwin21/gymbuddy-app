@@ -465,7 +465,8 @@ git push origin main
 
 1. **Trainer photos null untuk data lama** — Booking lama tidak punya foto trainer karena field `trainer_photo` baru ditambahkan. Booking baru akan punya foto jika trainer upload foto profil.
 2. **Pricing page** — Route di `/dashboard/pricingview` (bukan `/pricing`).
-3. **DNS domain** — `gymbuddy.site` belum terhubung ke Vercel. Akses via `https://frontend-three-bay-49.vercel.app` untuk sekarang.
+3. **DNS domain** — `gymbuddy.site` masih mengarah ke server lama (IP `82.25.62.13`, Apache/2, nameserver `ns8-9.hostdata.id`). Frontend sudah dideploy ke Vercel tapi domain belum diverifikasi. **Cara fix:** Set A record `gymbuddy.site` → `76.76.21.21` di registrar domain. 
+   - **Alternatif akses:** `https://frontend-three-bay-49.vercel.app` (Vercel URL, sudah berfungsi penuh)
 
 ---
 

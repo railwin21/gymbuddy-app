@@ -46,22 +46,22 @@
           <form @submit.prevent="handleUpdate" class="space-y-5">
             <div>
               <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">Full Name</label>
-              <input type="text" v-model="editForm.nama" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white outline-none focus:border-red-500">
+              <input type="text" v-model="editForm.nama" autocomplete="name" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white outline-none focus:border-red-500">
             </div>
 
             <div>
               <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">Official Email</label>
-              <input type="email" v-model="editForm.email" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white outline-none focus:border-red-500">
+              <input type="email" v-model="editForm.email" autocomplete="email" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white outline-none focus:border-red-500">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">Province</label>
-                <input type="text" v-model="editForm.propinsi" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white focus:border-red-500 outline-none">
+                <input type="text" v-model="editForm.propinsi" autocomplete="address-level1" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white focus:border-red-500 outline-none">
               </div>
               <div>
                 <label class="text-[10px] font-black uppercase text-gray-600 mb-2 block tracking-widest">City</label>
-                <input type="text" v-model="editForm.kota" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white focus:border-red-500 outline-none">
+                <input type="text" v-model="editForm.kota" autocomplete="address-level2" class="w-full bg-black border border-gray-800 rounded-2xl py-4 px-6 text-white focus:border-red-500 outline-none">
               </div>
             </div>
 

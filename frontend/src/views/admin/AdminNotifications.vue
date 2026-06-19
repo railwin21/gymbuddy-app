@@ -84,15 +84,15 @@
         <form @submit.prevent="handleSend" class="space-y-4">
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">User ID *</label>
-            <input v-model.number="sendForm.user_id" type="number" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required placeholder="ID pengguna tujuan">
+            <input v-model.number="sendForm.user_id" type="number" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required placeholder="ID pengguna tujuan">
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Judul *</label>
-            <input v-model="sendForm.title" type="text" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required placeholder="Contoh: Promo Spesial">
+            <input v-model="sendForm.title" type="text" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" required placeholder="Contoh: Promo Spesial">
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Pesan *</label>
-            <textarea v-model="sendForm.message" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-24" required placeholder="Isi pesan notifikasi..."></textarea>
+            <textarea v-model="sendForm.message" autocomplete="off" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none h-24" required placeholder="Isi pesan notifikasi..."></textarea>
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Tipe</label>

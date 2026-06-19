@@ -28,6 +28,7 @@
                   <input 
                     v-model="profile.nama"
                     type="text"
+                    autocomplete="name"
                     placeholder="E.g. John Doe"
                     class="w-full bg-black/40 border border-gray-800 text-gray-200 p-4 rounded-2xl outline-none focus:border-red-500/50 focus:ring-4 focus:ring-red-500/5 transition-all duration-300 text-sm"
                   >
@@ -39,6 +40,7 @@
                 <input 
                   v-model="profile.email"
                   type="email"
+                  autocomplete="email"
                   placeholder="name@company.com"
                   class="w-full bg-black/40 border border-gray-800 text-gray-200 p-4 rounded-2xl outline-none focus:border-red-500/50 focus:ring-4 focus:ring-red-500/5 transition-all duration-300 text-sm"
                 >
@@ -49,6 +51,7 @@
                 <input 
                   v-model="profile.kota"
                   type="text"
+                  autocomplete="address-level2"
                   placeholder="Your city"
                   class="w-full bg-black/40 border border-gray-800 text-gray-200 p-4 rounded-2xl outline-none focus:border-red-500/50 focus:ring-4 focus:ring-red-500/5 transition-all duration-300 text-sm"
                 >
@@ -59,6 +62,7 @@
                 <input 
                   v-model="profile.propinsi"
                   type="text"
+                  autocomplete="address-level1"
                   placeholder="Your province"
                   class="w-full bg-black/40 border border-gray-800 text-gray-200 p-4 rounded-2xl outline-none focus:border-red-500/50 focus:ring-4 focus:ring-red-500/5 transition-all duration-300 text-sm"
                 >

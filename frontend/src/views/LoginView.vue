@@ -23,14 +23,14 @@
         <form @submit.prevent="handleLogin" class="space-y-6">
           <div class="relative">
             <label class="block text-xs font-semibold text-gray-500 uppercase mb-2 ml-1">Email</label>
-            <input v-model="email" type="email" required
+            <input v-model="email" type="email" autocomplete="email" required
                    class="w-full bg-[#1F2937] border border-gray-700 text-white px-5 py-4 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all placeholder-gray-600"
                    placeholder="Masukkan email">
           </div>
 
           <div class="relative">
             <label class="block text-xs font-semibold text-gray-500 uppercase mb-2 ml-1">Password</label>
-            <input v-model="password" type="password" required
+            <input v-model="password" type="password" autocomplete="current-password" required
                    class="w-full bg-[#1F2937] border border-gray-700 text-white px-5 py-4 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all placeholder-gray-600"
                    placeholder="••••••••">
           </div>
