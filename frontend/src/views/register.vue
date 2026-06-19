@@ -85,6 +85,15 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast Notification -->
+  <Transition name="toast">
+    <div v-if="toast.show" 
+         :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
+         class="fixed bottom-6 right-6 px-6 py-4 rounded-2xl text-white font-bold text-sm shadow-2xl z-50">
+      {{ toast.message }}
+    </div>
+  </Transition>
 </template>
 
 <script setup>
@@ -94,6 +103,12 @@ import api from '../utils/api'
 
 const router = useRouter()
 const loading = ref(false)
+const toast = ref({ show: false, message: '', type: 'success' })
+
+const showToast = (message, type = 'success') => {
+  toast.value = { show: true, message, type }
+  setTimeout(() => { toast.value.show = false }, 3000)
+}
 
 const formData = ref({
   nama: '',
@@ -122,13 +137,27 @@ const handleRegister = async () => {
 
     await api.post(endpoint, payload)
     
-    alert('Pendaftaran Berhasil! Silakan Login.')
-    router.push('/login')
+    showToast('Pendaftaran Berhasil! Silakan Login.', 'success')
+    setTimeout(() => router.push('/login'), 1500)
   } catch (error) {
     const msg = error.response?.data?.message || 'Gagal mendaftar. Periksa koneksi.'
-    alert('Error: ' + msg)
+    showToast(msg, 'error')
   } finally {
     loading.value = false
   }
 }
 </script>
+
+<style scoped>
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.4s ease;
+}
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
+.toast-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+</style>
