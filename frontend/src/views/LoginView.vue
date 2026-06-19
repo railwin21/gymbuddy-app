@@ -56,7 +56,7 @@
   <!-- Toast Notification -->
   <Transition name="toast">
     <div v-if="toast.show" 
-         :class="toast.type === 'success' ? 'bg-red-500' : 'bg-red-500'"
+         :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
          class="fixed bottom-6 right-6 px-6 py-4 rounded-2xl text-white font-bold text-sm shadow-2xl z-50">
       {{ toast.message }}
     </div>
