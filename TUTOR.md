@@ -454,10 +454,12 @@ git push origin main
 | **Flutter Unit Tests** | ✅ **18/18 Pass** | Payment, Booking, Profile, Session Detail |
 | **Flutter Analyze** | ✅ **0 issues** | Clean |
 | **Frontend Build** | ✅ | Vite build success |
+| **E2E Browser Tests** | ✅ **17/17 Pass** | All pages verified, 0 console errors |
+| **Aksesibilitas** | ✅ **0 warnings** | id/name/aria-label added to all form fields |
 | **Backend APIs** | ✅ | All endpoints responding |
 | **Backend Railway** | ✅ | Deployed, DB connected |
 | **Frontend Vercel** | ✅ | Deployed, live |
-| **Android APK** | ✅ **Build success** | GymBuddy-v1.0.1.apk (53MB) tersedia di GitHub Release |
+| **Android APK** | ✅ **Build success** | Download di GitHub Release v1.0.1 |
 
 ---
 
@@ -465,8 +467,7 @@ git push origin main
 
 1. **Trainer photos null untuk data lama** — Booking lama tidak punya foto trainer karena field `trainer_photo` baru ditambahkan. Booking baru akan punya foto jika trainer upload foto profil.
 2. **Pricing page** — Route di `/dashboard/pricingview` (bukan `/pricing`).
-3. **DNS domain** — `gymbuddy.site` masih mengarah ke server lama (IP `82.25.62.13`, Apache/2, nameserver `ns8-9.hostdata.id`). Frontend sudah dideploy ke Vercel tapi domain belum diverifikasi. **Cara fix:** Set A record `gymbuddy.site` → `76.76.21.21` di registrar domain. 
-   - **Alternatif akses:** `https://frontend-three-bay-49.vercel.app` (Vercel URL, sudah berfungsi penuh)
+3. **Domain** — Akses via **Vercel URL**: `https://frontend-three-bay-49.vercel.app` (domain `gymbuddy.site` masih menunggu update DNS)
 
 ---
 

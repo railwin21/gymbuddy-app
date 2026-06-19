@@ -4,3 +4,15 @@ node_modules/
 *.log
 dist/
 .DS_Store
+*.apk
+*.apk.*
+mobile/build/
+mobile/ios/Pods/
+mobile/ios/Flutter/ephemeral/
+mobile/.packages
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+backend/uploads/profiles/*
+!backend/uploads/profiles/.gitkeep
+frontend/dist/
+.vercel
