@@ -28,46 +28,52 @@
             <p class="text-gray-400">Silakan lengkapi detail data diri Anda.</p>
           </div>
 
-          <form @submit.prevent="handleRegister" class="space-y-6">
+          <form @submit.prevent="handleRegister" class="space-y-6" novalidate>
             <div class="space-y-2">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Nama Lengkap</label>
-              <input v-model="formData.nama" type="text" placeholder="Masukkan nama lengkap" required
-                     class="w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder-gray-700">
+              <input v-model="formData.nama" type="text" placeholder="Masukkan nama lengkap"
+                     :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.nama ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
+              <p v-if="errors.nama" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.nama }}</p>
             </div>
 
             <div class="space-y-2">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Email Address</label>
-              <input v-model="formData.email" type="email" placeholder="nama@email.com" required
-                     class="w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder-gray-700">
+              <input v-model="formData.email" type="email" placeholder="nama@email.com"
+                     :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.email ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
+              <p v-if="errors.email" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.email }}</p>
             </div>
 
             <div class="space-y-2">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Password</label>
-              <input v-model="formData.password" type="password" placeholder="••••••••" required
-                     class="w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder-gray-700">
+              <input v-model="formData.password" type="password" placeholder="Minimal 6 karakter"
+                     :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.password ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
+              <p v-if="errors.password" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.password }}</p>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
                 <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Provinsi</label>
-                <input v-model="formData.propinsi" type="text" placeholder="Jawa Tengah" required
-                       class="w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder-gray-700">
+                <input v-model="formData.propinsi" type="text" placeholder="Jawa Tengah"
+                       :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.propinsi ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
+                <p v-if="errors.propinsi" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.propinsi }}</p>
               </div>
               <div class="space-y-2">
                 <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Kota</label>
-                <input v-model="formData.kota" type="text" placeholder="Purwokerto" required
-                       class="w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none transition-all placeholder-gray-700">
+                <input v-model="formData.kota" type="text" placeholder="Purwokerto"
+                       :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 outline-none transition-all placeholder-gray-700', errors.kota ? 'ring-2 ring-red-500' : 'focus:ring-red-500']">
+                <p v-if="errors.kota" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.kota }}</p>
               </div>
             </div>
 
             <div class="space-y-2 relative">
               <label class="text-xs font-semibold text-gray-500 uppercase ml-1">Daftar Sebagai</label>
-              <select v-model="formData.role" required
-                      class="w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none appearance-none cursor-pointer">
+              <select v-model="formData.role"
+                      :class="['w-full bg-[#1A1A1A] border-none text-white px-6 py-4 rounded-full focus:ring-2 focus:ring-red-500 outline-none appearance-none cursor-pointer', errors.role ? 'ring-2 ring-red-500' : '']">
                 <option value="" disabled>Pilih peran Anda</option>
                 <option value="customer">Member (Customer)</option>
                 <option value="trainer">Trainer (Pelatih)</option>
               </select>
+              <p v-if="errors.role" class="text-red-400 text-[10px] font-bold ml-2 mt-1">{{ errors.role }}</p>
               <span class="absolute right-6 top-[55px] -translate-y-1/2 text-red-500 pointer-events-none text-xs">▼</span>
             </div>
 
@@ -119,10 +125,37 @@ const formData = ref({
   kota: ''
 })
 
+const errors = ref({
+  nama: '',
+  email: '',
+  password: '',
+  role: '',
+  propinsi: '',
+  kota: ''
+})
+
+const validateForm = () => {
+  const e = { nama: '', email: '', password: '', role: '', propinsi: '', kota: '' }
+  let valid = true
+
+  if (!formData.value.nama.trim()) { e.nama = 'Nama lengkap wajib diisi'; valid = false }
+  if (!formData.value.email.trim()) { e.email = 'Email wajib diisi'; valid = false }
+  else if (!formData.value.email.includes('@')) { e.email = 'Format email tidak valid'; valid = false }
+  if (!formData.value.password) { e.password = 'Password wajib diisi'; valid = false }
+  else if (formData.value.password.length < 6) { e.password = 'Minimal 6 karakter'; valid = false }
+  if (!formData.value.propinsi.trim()) { e.propinsi = 'Provinsi wajib diisi'; valid = false }
+  if (!formData.value.kota.trim()) { e.kota = 'Kota wajib diisi'; valid = false }
+  if (!formData.value.role) { e.role = 'Pilih role Anda'; valid = false }
+
+  errors.value = e
+  return valid
+}
+
 const handleRegister = async () => {
+  if (!validateForm()) return
+
   loading.value = true
   try {
-    // Pilih endpoint berdasarkan role
     const endpoint = formData.value.role === 'trainer' 
       ? '/auth/register/trainer' 
       : '/auth/register'

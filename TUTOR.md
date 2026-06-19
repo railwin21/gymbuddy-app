@@ -210,12 +210,16 @@ flutter build ios
 
 ### Untuk Admin
 
-1. Login sebagai akun admin
-2. Dashboard admin dengan statistik lengkap
-3. Kelola Users, Trainer, Booking, Artikel
-4. Kelola Promo/Voucher
-5. Kelola FAQ
-6. Lihat Banner
+1. Login sebagai akun admin (`admin@gymbuddy.site` / `admin123`)
+2. Dashboard admin dengan statistik lengkap (total users, sessions, bookings)
+3. **Kelola Users** — Lihat, cari, dan hapus user
+4. **Kelola Trainer** — Daftar trainer terdaftar
+5. **Kelola Booking** — Semua booking & status pembayaran
+6. **Kelola Artikel** — Buat, edit, hapus artikel fitness
+7. **Kelola Promo/Voucher** — Buat kode promo dengan diskon
+8. **Kelola FAQ** — Atur pertanyaan umum
+9. **Kelola Banner** — CRUD banner landing page (judul, deskripsi, gambar URL, link, urutan, status aktif/nonaktif)
+10. **Kelola Notifikasi** — Kirim notifikasi ke user tertentu (dengan User ID, judul, pesan, tipe: system/promo/payment/booking)
 
 ---
 
@@ -255,8 +259,10 @@ flutter build ios
 - [x] Profil & Edit Profil
 - [x] Harga sesi (Pricing)
 - [x] Progress latihan
-- [x] Admin panel lengkap (CRUD)
-- [x] Trainer panel (kelola sesi)
+- [x] Admin panel lengkap (CRUD Users, Trainer, Booking, Artikel, Promo, FAQ)
+- [x] Banner management (admin) — CRUD banner landing page
+- [x] Notifikasi sistem — kirim & kelola notifikasi pengguna (admin)
+- [x] Trainer panel (kelola sesi, lihat client)
 - [x] Artikel fitness
 - [x] FAQ
 - [x] Promo/Voucher
@@ -301,6 +307,15 @@ gymbuddy-app/
 │   │   ├── views/           # Halaman-halaman
 │   │   │   ├── dashboard/   # Dashboard member
 │   │   │   ├── admin/       # Halaman admin
+│   │   │   │   ├── AdminDashboard.vue
+│   │   │   │   ├── AdminUsers.vue
+│   │   │   │   ├── AdminTrainers.vue
+│   │   │   │   ├── AdminBookings.vue
+│   │   │   │   ├── AdminArticles.vue
+│   │   │   │   ├── AdminPromo.vue
+│   │   │   │   ├── AdminFaq.vue
+│   │   │   │   ├── AdminBanners.vue      # CRUD banner landing page
+│   │   │   │   └── AdminNotifications.vue # Kirim & kelola notifikasi
 │   │   │   ├── dashboard_trainer/ # Halaman trainer
 │   │   │   ├── home.vue     # Landing page
 │   │   │   ├── LoginView.vue
@@ -386,15 +401,25 @@ gymbuddy-app/
 |--------|----------|-----------|
 | POST | `/api/upload/profile` | Upload foto profil (multipart) |
 
-### Admin
+### Admin & Analytics
 | Method | Endpoint | Deskripsi |
 |--------|----------|-----------|
 | GET | `/api/analytics/dashboard` | Statistik dashboard |
 | GET | `/api/trainers` | List trainers |
-| CRUD | `/api/articles` | Artikel |
-| CRUD | `/api/faq` | FAQ |
-| CRUD | `/api/promo` | Promo/Voucher |
-| CRUD | `/api/banners` | Banners |
+| GET/POST/PUT/DELETE | `/api/articles` | Artikel CRUD |
+| GET/POST/PUT/DELETE | `/api/faq` | FAQ CRUD |
+| GET/POST/PUT/DELETE | `/api/promo` | Promo/Voucher CRUD |
+| GET/POST/PUT/DELETE | `/api/banners` | Banner CRUD |
+
+### Notifications
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/notifications` | List semua notifikasi (admin) |
+| GET | `/api/notifications/my` | Notifikasi user login |
+| POST | `/api/notifications/send` | Kirim notifikasi ke user (admin) |
+| PATCH | `/api/notifications/:id/read` | Tandai notifikasi sudah dibaca |
+| PATCH | `/api/notifications/read-all` | Tandai semua sudah dibaca |
+| DELETE | `/api/notifications/:id` | Hapus notifikasi (admin) |
 
 ---
 
@@ -432,15 +457,15 @@ git push origin main
 | **Backend APIs** | ✅ | All endpoints responding |
 | **Backend Railway** | ✅ | Deployed, DB connected |
 | **Frontend Vercel** | ✅ | Deployed, live |
-| **Android APK** | ⚠️ Perlu compileSdk 36 | fluttertoast compatibility |
+| **Android APK** | ✅ **Build success** | GymBuddy-v1.0.0.apk (56MB) tersedia di GitHub Release |
 
 ---
 
 ## 🐛 Known Issues
 
 1. **Trainer photos null untuk data lama** — Booking lama tidak punya foto trainer karena field `trainer_photo` baru ditambahkan. Booking baru akan punya foto jika trainer upload foto profil.
-2. **APK build** — Perlu compileSdk 36 atau update `fluttertoast` ke versi terbaru.
-3. **Pricing page** — Route di `/dashboard/pricingview` (bukan `/pricing`).
+2. **Pricing page** — Route di `/dashboard/pricingview` (bukan `/pricing`).
+3. **DNS domain** — `gymbuddy.site` belum terhubung ke Vercel. Akses via `https://frontend-three-bay-49.vercel.app` untuk sekarang.
 
 ---
 
