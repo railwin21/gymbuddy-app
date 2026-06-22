@@ -38,6 +38,7 @@ app.use(compression())
 // CORS - lebih ketat
 const allowedOrigins = [
     process.env.FRONTEND_URL || 'http://localhost:5173',
+    'https://gymbuddy.site',
     'http://localhost:3000',
     'http://localhost:5000'
 ]

@@ -48,7 +48,7 @@ Aplikasi tersedia dalam 3 platform:
 | **Backend API** | Node.js + Express.js | Node 18+ |
 | **Database** | MySQL (Aiven Cloud) | MySQL 8.x |
 | **Payment** | Midtrans Snap (Sandbox) | — |
-| **Hosting Web** | Vercel | — |
+| **Hosting Web** | Vercel / host.id | — |
 | **Hosting API** | Railway | — |
 | **File Upload** | Multer (local storage) | — |
 | **Caching** | In-memory cache | — |
@@ -233,7 +233,9 @@ flutter build ios
 | Role | Email | Password |
 |------|-------|----------|
 | **👤 Member** | `user@gymbuddy.site` | `user123` |
-| **🏋️ Trainer** | `fadhel@gymbuddy.site` | `trainer123` |
+| **🏋️ Trainer 1** | `fadhel@gymbuddy.site` | `trainer123` |
+| **🏋️ Trainer 2** | `arif@gymbuddy.site` | `trainer123` |
+| **🏋️ Trainer 3** | `gusti@gymbuddy.site` | `trainer123` |
 | **🛠️ Admin** | `admin@gymbuddy.site` | `admin123` |
 
 ### Kartu Kredit Test Midtrans (Sandbox)
@@ -470,7 +472,7 @@ git push origin main
 
 1. **Trainer photos null untuk data lama** — Booking lama tidak punya foto trainer karena field `trainer_photo` baru ditambahkan. Booking baru akan punya foto jika trainer upload foto profil.
 2. **Pricing page** — Route di `/dashboard/pricingview` (bukan `/pricing`).
-3. **Domain** — Akses via **Vercel URL**: `https://frontend-three-bay-49.vercel.app`
+3. **Domain** — Web di **Vercel** / **host.id**, backend di **Railway**.
 
 ---
 

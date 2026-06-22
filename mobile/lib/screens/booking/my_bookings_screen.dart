@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/api_service.dart';
-import '../payment/payment_screen.dart';
 
 class MyBookingsScreen extends ConsumerStatefulWidget {
   const MyBookingsScreen({super.key});
@@ -88,16 +88,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
       return;
     }
     
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => PaymentScreen(
-          bookingId: booking['booking_id'] ?? bookingId,
-          sessionTitle: booking['session_title'] ?? 'Sesi Latihan',
-          amount: double.tryParse((booking['payment_amount'] ?? 0).toString()) ?? 0,
-        ),
-      ),
-    );
+    final payBookingId = booking['booking_id'] ?? bookingId;
+    final title = Uri.encodeComponent(booking['session_title'] ?? 'Sesi Latihan');
+    final amount = double.tryParse((booking['payment_amount'] ?? 0).toString()) ?? 0;
+    
+    final result = await context.push<bool>('/payment/$payBookingId?title=$title&amount=$amount');
     
     // Refresh bookings after payment attempt
     if (result == true) {
@@ -111,11 +106,10 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Booking Saya'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: const Text('Booking Saya'),          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
       ),
       body: _buildContent(theme),
     );

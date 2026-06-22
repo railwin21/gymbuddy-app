@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/api_service.dart';
@@ -23,9 +24,12 @@ class PaymentScreen extends ConsumerStatefulWidget {
 class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   final _api = ApiService();
   bool _isProcessing = false;
+  bool _isCheckingStatus = false;
   String? _error;
   String? _paymentUrl;
   bool _paymentDone = false;
+  String? _paymentStatus;
+  String? _orderId;
 
   @override
   void initState() {
@@ -34,36 +38,37 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Future<void> _initPayment() async {
-    setState(() => _isProcessing = true);
+    setState(() {
+      _isProcessing = true;
+      _error = null;
+    });
     final res = await _api.createPayment(widget.bookingId);
     if (res['data'] != null) {
       final data = res['data'];
       setState(() {
         _paymentUrl = data['redirect_url'];
+        _orderId = data['order_id'];
         _isProcessing = false;
       });
     } else {
-      setState(() { _error = res['message'] ?? 'Gagal memproses pembayaran'; _isProcessing = false; });
+      setState(() {
+        _error = res['message'] ?? 'Gagal memproses pembayaran';
+        _isProcessing = false;
+      });
     }
   }
 
   Future<void> _openPaymentUrl() async {
     if (_paymentUrl == null) return;
     final uri = Uri.parse(_paymentUrl!);
+
+    // Use inAppWebView for Midtrans payment
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.inAppWebView);
       if (!mounted) return;
-      // Refresh booking status from backend
-      await _api.getPaymentStatus(widget.bookingId);
-      if (!mounted) return;
-      // After returning from in-app payment page, check payment status
-      setState(() => _paymentDone = true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Pembayaran diproses. Silakan cek status booking Anda.'),
-          backgroundColor: Colors.blue,
-        ),
-      );
+
+      // After returning from Midtrans webview, check payment status
+      await _checkPaymentStatus();
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -73,6 +78,74 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _checkPaymentStatus() async {
+    if (_isCheckingStatus) return;
+    setState(() => _isCheckingStatus = true);
+    try {
+      final res = await _api.getPaymentStatus(widget.bookingId);
+      if (!mounted) return;
+
+      final data = res['data'] as Map<String, dynamic>?;
+      if (data != null) {
+        final paymentStatus = data['payment_status'] ?? '';
+        final bookingStatus = data['status'] ?? '';
+
+        setState(() {
+          _paymentStatus = paymentStatus;
+        });
+
+        if (paymentStatus == 'settlement' || bookingStatus == 'Confirmed') {
+          setState(() => _paymentDone = true);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Pembayaran berhasil! Sesi Anda sudah dikonfirmasi.'),
+              backgroundColor: Colors.green[700],
+            ),
+          );
+        } else if (paymentStatus == 'pending') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Pembayaran masih diproses. Silakan cek status booking Anda.'),
+              backgroundColor: Colors.blue,
+            ),
+          );
+        } else if (['deny', 'cancel', 'expire'].contains(paymentStatus)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Pembayaran $paymentStatus. Silakan coba lagi.'),
+              backgroundColor: Colors.red[700],
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Status pembayaran: Menunggu konfirmasi.'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pembayaran diproses. Silakan cek status booking Anda.'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal mengecek status pembayaran'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCheckingStatus = false);
     }
   }
 
@@ -104,7 +177,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               children: [
                 Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
                 const SizedBox(height: 16),
-                Text(_error!, style: TextStyle(color: Colors.red[700], fontSize: 16)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(_error!, style: TextStyle(color: Colors.red[700], fontSize: 16), textAlign: TextAlign.center),
+                ),
                 const SizedBox(height: 24),
                 ElevatedButton(onPressed: _initPayment, child: const Text('Coba Lagi')),
               ],
@@ -124,6 +200,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           const SizedBox(height: 16),
                           _detailRow('Booking', '#${widget.bookingId}'),
                           _detailRow('Sesi', widget.sessionTitle),
+                          if (_orderId != null) _detailRow('Order ID', _orderId!),
                           const Divider(height: 24),
                           _detailRow('Total', 'Rp${_formatRupiah(widget.amount)}', isBold: true),
                         ],
@@ -131,63 +208,155 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  if (!_paymentDone && _paymentUrl != null)
-                    Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton.icon(
-                            onPressed: _openPaymentUrl,
-                            icon: const Icon(Icons.payment),
-                            label: const Text('Bayar Sekarang via Midtrans'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: theme.colorScheme.primary,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+
+                  // Payment Status Display
+                  if (_paymentStatus != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: _paymentStatus == 'settlement'
+                            ? Colors.green[50]
+                            : Colors.orange[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _paymentStatus == 'settlement'
+                              ? Colors.green[200]!
+                              : Colors.orange[200]!,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _paymentStatus == 'settlement'
+                                ? Icons.check_circle
+                                : Icons.access_time,
+                            color: _paymentStatus == 'settlement'
+                                ? Colors.green[700]
+                                : Colors.orange[700],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _paymentStatus == 'settlement'
+                                      ? 'Pembayaran Berhasil'
+                                      : 'Menunggu Pembayaran',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: _paymentStatus == 'settlement'
+                                        ? Colors.green[700]
+                                        : Colors.orange[700],
+                                  ),
+                                ),
+                                Text(
+                                  _paymentStatus == 'settlement'
+                                      ? 'Booking Anda sudah dikonfirmasi'
+                                      : 'Status: $_paymentStatus',
+                                  style: TextStyle(
+                                    color: _paymentStatus == 'settlement'
+                                        ? Colors.green[600]
+                                        : Colors.orange[600],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Anda akan diarahkan ke halaman pembayaran Midtrans.\nPilih metode pembayaran dan selesaikan pembayaran.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                        ),
-                        const SizedBox(height: 12),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Bayar Nanti'),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  if (_paymentDone)
-                    Column(
-                      children: [
-                        Icon(Icons.check_circle, size: 64, color: Colors.green[600]),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Pembayaran telah diproses!',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[700],
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Action Buttons
+                  if (!_paymentDone && _paymentUrl != null) ...[
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: _openPaymentUrl,
+                        icon: const Icon(Icons.payment),
+                        label: const Text('Bayar Sekarang via Midtrans'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Cek status booking Anda untuk konfirmasi.',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Kembali ke Booking'),
-                        ),
-                      ],
+                      ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Anda akan diarahkan ke halaman pembayaran Midtrans.\nPilih metode pembayaran dan selesaikan pembayaran.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Check status button
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _isCheckingStatus ? null : _checkPaymentStatus,
+                        icon: _isCheckingStatus
+                            ? const SizedBox(
+                                width: 16, height: 16,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.refresh, size: 18),
+                        label: Text(
+                            _isCheckingStatus
+                                ? 'Memeriksa...'
+                                : 'Cek Status Pembayaran'
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: theme.colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => context.pop(true),
+                      child: const Text('Bayar Nanti'),
+                    ),
+                  ],
+
+                  if (_paymentDone) ...[
+                    Icon(Icons.check_circle, size: 64, color: Colors.green[600]),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Pembayaran Berhasil!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Booking Anda sudah dikonfirmasi. Silakan hadiri sesi latihan tepat waktu.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => context.pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Kembali ke Booking'),
+                    ),
+                  ],
                 ],
               ),
             ),

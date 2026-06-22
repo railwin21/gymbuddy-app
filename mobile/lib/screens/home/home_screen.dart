@@ -438,7 +438,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               title: const Text('Lihat Profil'),
               onTap: () {
                 Navigator.pop(ctx);
-                context.go('/profile');
+                context.push('/profile');
               },
             ),
             const Divider(),

@@ -10,7 +10,7 @@ export const getAllTrainers = async (req, res) => {
         const currentLimit = parseInt(limit) || 20;
         const offset = (currentPage - 1) * currentLimit;
 
-        let query = "SELECT id, nama, email, propinsi, kota, created_at FROM user WHERE role = 'trainer'";
+        let query = "SELECT id, nama, email, propinsi, kota, foto, created_at FROM user WHERE role = 'trainer'";
         let countQuery = "SELECT COUNT(*) as total FROM user WHERE role = 'trainer'";
         let params = [];
 

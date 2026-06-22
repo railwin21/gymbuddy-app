@@ -323,6 +323,16 @@ class ApiService {
     }
   }
 
+  // ==================== TRAINER VIEWS ====================
+  Future<Map<String, dynamic>> getTrainerBookingHistory() async {
+    try {
+      final res = await _dio.get('/views/customer-booking-history');
+      return {'success': true, 'data': res.data['data'] ?? []};
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
   // ==================== ADMIN ====================
   Future<Map<String, dynamic>> adminGetDashboard() async {
     try {

@@ -5,6 +5,7 @@ import { adminReq, trainerReq, customerReq } from '../middleware/Role.Middleware
 import {
     CustomerBookingHistory,
     CustomerBookingHistoryId,
+    getTrainerBookingHistory,
     matched_trainer_customer,
     member_progress_summary_id,
     member_progress_summary,
@@ -20,14 +21,18 @@ const router = express.Router();
 router.use(authMiddleware);
 
 // Customer Booking History Views
-// Accessible by: customers (their own), trainers, admins
+// Accessible by: customers (their own), trainers (their own sessions), admins (all)
 router.get('/customer-booking-history', (req, res, next) => {
     if (req.user.role === 'customer') {
         // Redirect customers to their own history
         return CustomerBookingHistoryId({ ...req, params: { id: req.user.id } }, res);
     }
+    if (req.user.role === 'trainer') {
+        // Trainers see bookings for their own sessions
+        return getTrainerBookingHistory(req, res);
+    }
     next();
-}, adminReq, CustomerBookingHistory); // Admins can see all
+}, adminReq, CustomerBookingHistory); // Admins see all
 
 router.get('/customer-booking-history/:id', (req, res, next) => {
     // Customers can only see their own history

@@ -84,6 +84,35 @@ export const matched_trainer_customer = async (req, res) => {
     }
 };
 
+/**
+ * Get booking history for trainers (their own sessions' bookings)
+ */
+export const getTrainerBookingHistory = async (req, res) => {
+    try {
+        const trainer_id = req.user.id;
+
+        const db = await getDBPool();
+        const rows = await db.query(
+            `SELECT b.id as booking_id, s.title as session_title, s.start_time, s.end_time,
+                    u.nama as customer_name, u.id as customer_id, u.email as customer_email,
+                    tr.nama as trainer_name, b.status, b.payment_status, b.payment_amount,
+                    b.datetime_created as booked_on
+             FROM booking b
+             JOIN session s ON b.session_id = s.id
+             JOIN user u ON b.member_id = u.id
+             JOIN user tr ON s.trainer_id = tr.id
+             WHERE s.trainer_id = ?
+             ORDER BY b.datetime_created DESC`,
+            [trainer_id]
+        );
+
+        return success(res, rows, 'Riwayat booking trainer berhasil diambil');
+    } catch (err) {
+        console.error('[getTrainerBookingHistory] Error:', err.message, err.stack);
+        return error(res, 'Terjadi kesalahan server', 500);
+    }
+};
+
 export const member_progress_summary = async (req, res) => {
     try {
         const cacheKey = 'view_member_progress_summary';

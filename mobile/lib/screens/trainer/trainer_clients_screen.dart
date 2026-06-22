@@ -32,7 +32,7 @@ class _TrainerClientsScreenState extends ConsumerState<TrainerClientsScreen> {
   Future<void> _loadClients() async {
     setState(() => _loading = true);
     try {
-      final res = await _api.getMyBookings();
+      final res = await _api.getTrainerBookingHistory();
       final data = (res['data'] as List?) ?? [];
       setState(() {
         _clients = data;

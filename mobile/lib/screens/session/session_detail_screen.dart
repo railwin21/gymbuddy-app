@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/api_service.dart';
@@ -45,7 +46,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(res['message'] ?? 'Booking berhasil!'), backgroundColor: Colors.green[700]),
         );
-        Navigator.pop(context, true);
+        context.pop(true);
       }
     } else {
       if (mounted) {

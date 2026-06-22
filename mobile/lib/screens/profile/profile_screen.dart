@@ -115,11 +115,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final user = auth.user;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+      appBar: AppBar(          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.pop(),
+          ),
         title: const Text('Profil'),
         actions: [
           if (!_isEditing)
