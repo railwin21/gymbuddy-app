@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/api_service.dart';
+import 'admin_drawer.dart';
 
 class AdminFaqScreen extends ConsumerStatefulWidget {
   const AdminFaqScreen({super.key});
@@ -35,6 +36,7 @@ class _AdminFaqScreenState extends ConsumerState<AdminFaqScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('FAQ'), backgroundColor: theme.colorScheme.primaryContainer),
+      drawer: const AdminDrawer(),
       body: _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _faqs.isEmpty

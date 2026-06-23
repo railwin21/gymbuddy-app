@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import 'admin_drawer.dart';
 
 class AdminBookingsScreen extends ConsumerStatefulWidget {
   const AdminBookingsScreen({super.key});
@@ -47,6 +48,7 @@ class _AdminBookingsScreenState extends ConsumerState<AdminBookingsScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Kelola Booking'), backgroundColor: theme.colorScheme.primaryContainer),
+      drawer: const AdminDrawer(),
       body: Column(
         children: [
           SingleChildScrollView(

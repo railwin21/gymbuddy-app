@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/api_service.dart';
+import 'admin_drawer.dart';
 
 class AdminUsersScreen extends ConsumerStatefulWidget {
   const AdminUsersScreen({super.key});
@@ -68,6 +69,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Kelola Users'), backgroundColor: theme.colorScheme.primaryContainer),
+      drawer: const AdminDrawer(),
       body: Column(
         children: [
           Padding(

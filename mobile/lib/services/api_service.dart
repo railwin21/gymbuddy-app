@@ -351,6 +351,34 @@ class ApiService {
     }
   }
 
+  // ==================== TRAINER SESSIONS CRUD ====================
+  Future<Map<String, dynamic>> createSession(Map<String, dynamic> data) async {
+    try {
+      final res = await _dio.post('/sessions', data: data);
+      return res.data;
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> updateSession(int id, Map<String, dynamic> data) async {
+    try {
+      final res = await _dio.put('/sessions/$id', data: data);
+      return res.data;
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteSession(int id) async {
+    try {
+      final res = await _dio.delete('/sessions/$id');
+      return res.data;
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
   // ==================== ADMIN ====================
   Future<Map<String, dynamic>> adminGetDashboard() async {
     try {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import 'admin_drawer.dart';
 
 class AdminArticlesScreen extends ConsumerStatefulWidget {
   const AdminArticlesScreen({super.key});
@@ -36,6 +37,7 @@ class _AdminArticlesScreenState extends ConsumerState<AdminArticlesScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Artikel'), backgroundColor: theme.colorScheme.primaryContainer),
+      drawer: const AdminDrawer(),
       body: _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _articles.isEmpty

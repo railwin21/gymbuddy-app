@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/auth_provider.dart';
+import '../../services/ui_helpers.dart';
 
 class TrainerSessionsScreen extends ConsumerStatefulWidget {
   const TrainerSessionsScreen({super.key});
@@ -49,17 +50,212 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
     return _sessions.where((s) => s['status'] == _filter).toList();
   }
 
+  Future<void> _deleteSession(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus Sesi'),
+        content: const Text('Yakin ingin menghapus sesi ini?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Hapus', style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+    
+    if (confirm == true) {
+      setState(() => _loading = true);
+      try {
+        final res = await _api.deleteSession(id);
+        if (res['success'] != false) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sesi berhasil dihapus'), backgroundColor: Colors.green),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(res['message'] ?? 'Gagal menghapus'), backgroundColor: Colors.red),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Koneksi bermasalah'), backgroundColor: Colors.red),
+        );
+      }
+      _loadSessions();
+    }
+  }
+
+  Future<void> _showSessionForm({dynamic session}) async {
+    final isEdit = session != null;
+    final titleController = TextEditingController(text: isEdit ? session['title'] : '');
+    final descController = TextEditingController(text: isEdit ? session['deskripsi'] : '');
+    final priceController = TextEditingController(text: isEdit ? (session['price'] ?? 0).toString() : '150000');
+    
+    DateTime? startTime = isEdit && session['start_time'] != null ? DateTime.parse(session['start_time']) : null;
+    DateTime? endTime = isEdit && session['end_time'] != null ? DateTime.parse(session['end_time']) : null;
+
+    final formKey = GlobalKey<FormState>();
+
+    String formatDT(DateTime? dt) => dt != null ? DateFormat('dd MMM yyyy, HH:mm').format(dt) : 'Pilih Waktu';
+
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future<void> pickDateTime(bool isStart) async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: (isStart ? startTime : endTime) ?? DateTime.now(),
+                firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+              );
+              if (date != null) {
+                if (!context.mounted) return;
+                final time = await showTimePicker(
+                  context: context,
+                  initialTime: TimeOfDay.fromDateTime((isStart ? startTime : endTime) ?? DateTime.now()),
+                );
+                if (time != null) {
+                  setDialogState(() {
+                    final dt = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+                    if (isStart) {
+                      startTime = dt;
+                    } else {
+                      endTime = dt;
+                    }
+                  });
+                }
+              }
+            }
+
+            return AlertDialog(
+              title: Text(isEdit ? 'Edit Sesi' : 'Tambah Sesi Baru'),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: titleController,
+                        decoration: const InputDecoration(labelText: 'Judul Sesi'),
+                        validator: (v) => v == null || v.isEmpty ? 'Judul wajib diisi' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: descController,
+                        decoration: const InputDecoration(labelText: 'Deskripsi'),
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: priceController,
+                        decoration: const InputDecoration(labelText: 'Harga (Rp)'),
+                        keyboardType: TextInputType.number,
+                        validator: (v) => v == null || v.isEmpty ? 'Harga wajib diisi' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Mulai:', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextButton(
+                            onPressed: () => pickDateTime(true),
+                            child: Text(formatDT(startTime)),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Selesai:', style: TextStyle(fontWeight: FontWeight.bold)),
+                          TextButton(
+                            onPressed: () => pickDateTime(false),
+                            child: Text(formatDT(endTime)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) return;
+                    if (startTime == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Waktu mulai wajib diisi')),
+                      );
+                      return;
+                    }
+                    
+                    final payload = {
+                      'title': titleController.text.trim(),
+                      'deskripsi': descController.text.trim(),
+                      'trainer_id': ref.read(authProvider).user?['id'],
+                      'start_time': DateFormat('yyyy-MM-dd HH:mm:ss').format(startTime!),
+                      'end_time': endTime != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(endTime!) : null,
+                      'price': double.tryParse(priceController.text) ?? 0,
+                    };
+
+                    Navigator.pop(ctx);
+                    setState(() => _loading = true);
+                    
+                    try {
+                      Map<String, dynamic> res;
+                      if (isEdit) {
+                        res = await _api.updateSession(session['id'], payload);
+                      } else {
+                        res = await _api.createSession(payload);
+                      }
+                      
+                      if (res['success'] != false) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(isEdit ? 'Sesi diperbarui!' : 'Sesi ditambahkan!'), backgroundColor: Colors.green[700]),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(res['message'] ?? 'Gagal memproses'), backgroundColor: Colors.red[700]),
+                        );
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Koneksi bermasalah'), backgroundColor: Colors.red),
+                      );
+                    }
+                    _loadSessions();
+                  },
+                  child: const Text('Simpan'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Kelola Sesi')),
+      appBar: AppBar(
+        title: const Text('Kelola Sesi'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => showProfileMenu(context, ref),
+          ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // Filter chips
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -78,11 +274,13 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
                     ),
                   ),
                 ),
-
-                // Content
                 Expanded(child: _buildContent(theme)),
               ],
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showSessionForm(),
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
@@ -219,6 +417,23 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
                 Text(
                   'Rp${NumberFormat('#,###', 'id_ID').format(num.tryParse(price.toString()) ?? 0)}',
                   style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ],
+            ),
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  onPressed: () => _showSessionForm(session: session),
+                  icon: const Icon(Icons.edit, size: 16),
+                  label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                ),
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: () => _deleteSession(session['id']),
+                  icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                  label: const Text('Hapus', style: TextStyle(fontSize: 12, color: Colors.red)),
                 ),
               ],
             ),

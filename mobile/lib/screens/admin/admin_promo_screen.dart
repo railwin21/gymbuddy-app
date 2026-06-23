@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import 'admin_drawer.dart';
 
 class AdminPromoScreen extends ConsumerStatefulWidget {
   const AdminPromoScreen({super.key});
@@ -45,6 +46,7 @@ class _AdminPromoScreenState extends ConsumerState<AdminPromoScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Promo & Voucher'), backgroundColor: theme.colorScheme.primaryContainer),
+      drawer: const AdminDrawer(),
       body: _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _promos.isEmpty

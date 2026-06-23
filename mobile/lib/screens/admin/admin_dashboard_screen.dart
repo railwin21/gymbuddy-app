@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import '../../services/ui_helpers.dart';
+import 'admin_drawer.dart';
 
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -57,7 +59,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Panel'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => showProfileMenu(context, ref),
+          ),
+        ],
       ),
+      drawer: const AdminDrawer(),
       body: _buildContent(theme),
     );
   }

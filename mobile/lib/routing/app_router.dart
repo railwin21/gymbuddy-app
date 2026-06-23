@@ -47,7 +47,13 @@ GoRouter createRouter(WidgetRef ref) {
       if (!isInitialized) return null;
 
       if (!isLoggedIn && !isAuthRoute) return '/login';
-      if (isLoggedIn && isAuthRoute) return '/';
+      
+      if (isLoggedIn && (state.matchedLocation == '/' || isAuthRoute)) {
+        if (auth.isAdmin) return '/admin';
+        if (auth.isTrainer) return '/trainer';
+        if (isAuthRoute) return '/';
+      }
+      
       if (isAdminRoute && !auth.isAdmin) return '/';
       if (isTrainerRoute && !auth.isTrainer && !auth.isAdmin) return '/';
       return null;

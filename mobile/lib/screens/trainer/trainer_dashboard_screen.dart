@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/auth_provider.dart';
+import '../../services/ui_helpers.dart';
 
 class TrainerDashboardScreen extends ConsumerStatefulWidget {
   const TrainerDashboardScreen({super.key});
@@ -57,7 +58,15 @@ class _TrainerDashboardScreenState extends ConsumerState<TrainerDashboardScreen>
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard Trainer')),
+      appBar: AppBar(
+        title: const Text('Dashboard Trainer'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => showProfileMenu(context, ref),
+          ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -74,11 +83,11 @@ class _TrainerDashboardScreenState extends ConsumerState<TrainerDashboardScreen>
                   // Stats
                   Row(
                     children: [
-                      _buildStatCard('Sesi Aktif', '$activeSessions', Icons.calendar_month, Colors.red, theme, onTap: () => context.go('/trainer/sessions')),
+                      _buildStatCard('Sesi Aktif', '$activeSessions', Icons.calendar_month, Colors.red, theme, onTap: () => context.push('/trainer/sessions')),
                       const SizedBox(width: 12),
-                      _buildStatCard('Total Booker', '$totalBookings', Icons.people, Colors.blue, theme, onTap: () => context.go('/trainer/clients')),
+                      _buildStatCard('Total Booker', '$totalBookings', Icons.people, Colors.blue, theme, onTap: () => context.push('/trainer/clients')),
                       const SizedBox(width: 12),
-                      _buildStatCard('Total Sesi', '${_sessions.length}', Icons.fitness_center, Colors.green, theme, onTap: () => context.go('/trainer/sessions')),
+                      _buildStatCard('Total Sesi', '${_sessions.length}', Icons.fitness_center, Colors.green, theme, onTap: () => context.push('/trainer/sessions')),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -88,9 +97,9 @@ class _TrainerDashboardScreenState extends ConsumerState<TrainerDashboardScreen>
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _buildActionCard('Kelola Sesi', Icons.edit_calendar, Colors.red, () => context.go('/trainer/sessions'))),
+                      Expanded(child: _buildActionCard('Kelola Sesi', Icons.edit_calendar, Colors.red, () => context.push('/trainer/sessions'))),
                       const SizedBox(width: 12),
-                      Expanded(child: _buildActionCard('Daftar Booker', Icons.people, Colors.blue, () => context.go('/trainer/clients'))),
+                      Expanded(child: _buildActionCard('Daftar Booker', Icons.people, Colors.blue, () => context.push('/trainer/clients'))),
                     ],
                   ),
 

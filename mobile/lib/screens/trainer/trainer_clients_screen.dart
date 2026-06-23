@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
+import '../../services/ui_helpers.dart';
 
 class TrainerClientsScreen extends ConsumerStatefulWidget {
   const TrainerClientsScreen({super.key});
@@ -60,7 +61,15 @@ class _TrainerClientsScreenState extends ConsumerState<TrainerClientsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Daftar Booker')),
+      appBar: AppBar(
+        title: const Text('Daftar Booker'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () => showProfileMenu(context, ref),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           // Search

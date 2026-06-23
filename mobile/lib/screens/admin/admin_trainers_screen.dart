@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/api_service.dart';
+import 'admin_drawer.dart';
 
 class AdminTrainersScreen extends ConsumerStatefulWidget {
   const AdminTrainersScreen({super.key});
@@ -36,6 +37,7 @@ class _AdminTrainersScreenState extends ConsumerState<AdminTrainersScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Kelola Trainer'), backgroundColor: theme.colorScheme.primaryContainer),
+      drawer: const AdminDrawer(),
       body: _isLoading
         ? const Center(child: CircularProgressIndicator())
         : _trainers.isEmpty

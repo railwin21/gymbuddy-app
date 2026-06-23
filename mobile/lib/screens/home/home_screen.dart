@@ -101,25 +101,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ? BottomNavigationBar(
               currentIndex: 0,
               onTap: (i) {
-                // Gunakan go() untuk tab switch (ganti route, bukan push)
                 if (i == 0 && ModalRoute.of(context)?.settings.name != '/') context.go('/');
-                if (i == 1 && !auth.isTrainer && !auth.isAdmin) context.go('/find-trainers');
-                if (i == 1 && auth.isTrainer) context.go('/my-bookings');
-                if (i == 1 && auth.isAdmin) context.go('/admin');
-                if (i == 2 && !auth.isTrainer) context.go('/my-bookings');
+                if (i == 1) context.go('/find-trainers');
+                if (i == 2) context.go('/my-bookings');
               },
               selectedItemColor: theme.colorScheme.primary,
-              items: [
-                const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                if (auth.isTrainer) ...[
-                  const BottomNavigationBarItem(icon: Icon(Icons.calendar_month), label: 'Sesi'),
-                  const BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Clients'),
-                ] else if (auth.isAdmin) ...[
-                  const BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Admin'),
-                ] else ...[
-                  const BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Cari'),
-                  const BottomNavigationBarItem(icon: Icon(Icons.book_online), label: 'Booking'),
-                ],
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+                BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Cari'),
+                BottomNavigationBarItem(icon: Icon(Icons.book_online), label: 'Booking'),
               ],
             )
           : null,
