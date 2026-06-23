@@ -23,20 +23,26 @@ router.post('/profile', authMiddleware, (req, res) => {
     }
 
     try {
-      const db = await getDBPool();
-      const filePath = req.file.path.replace(/\\/g, '/'); // Normalize path
+      const pool = getDBPool();
+      const conn = await pool.getConnection();
+      try {
+        const filePath = req.file.path.replace(/\\/g, '/');
 
-      // Update foto di database
-      await db.query('UPDATE user SET foto = ? WHERE id = ?', [filePath, req.user.id]);
+        // Gunakan connection langsung (bukan pool.query) untuk memastikan query tereksekusi
+        const result = await conn.query('UPDATE user SET foto = ? WHERE id = ?', [filePath, req.user.id]);
+        console.log('[Upload] DB update result:', JSON.stringify(result));
+        console.log('[Upload] foto set to:', filePath, 'for user:', req.user.id);
 
-      // Hapus cache terkait
-      cache.del(`user_${req.user.id}`);
-      cache.del('all_users');
+        cache.del(`user_${req.user.id}`);
+        cache.del('all_users');
 
-      return success(res, {
-        foto: filePath,
-        url: `/uploads/profiles/${req.file.filename}`
-      }, 'Foto profil berhasil diupload');
+        return success(res, {
+          foto: filePath,
+          url: `/uploads/profiles/${req.file.filename}`
+        }, 'Foto profil berhasil diupload');
+      } finally {
+        conn.release();
+      }
     } catch (dbErr) {
       console.error('Upload DB error:', dbErr);
       return error(res, 'Gagal menyimpan data foto', 500);
