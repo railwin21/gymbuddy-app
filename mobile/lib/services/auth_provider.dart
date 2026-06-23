@@ -73,6 +73,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(token: token, isLoggedIn: true);
       try {
         final res = await _api.getUserProfile();
+        // Jika API return error (misal token expired), throw biar masuk catch
+        if (res['success'] == false) {
+          throw Exception(res['message'] ?? 'Gagal load profil');
+        }
         final user = res['data'] ?? res['user'];
         state = state.copyWith(
           user: user,
@@ -82,7 +86,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
           isInitialized: true,
         );
       } catch (e) {
-        // Token expired — clear dan tandai selesai
+        // Token expired atau API error — clear dan tandai selesai
         ApiService.setToken(null);
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
