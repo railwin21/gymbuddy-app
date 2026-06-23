@@ -1,5 +1,26 @@
 import {getDBPool} from '../config/db.js';
+import fs from 'fs';
+import path from 'path';
 import cache from '../utils/cache.js';
+
+// Fallback: cari file foto dari filesystem untuk trainer yang foto DB-nya null
+function enrichTrainerPhoto(trainer) {
+  if (!trainer || trainer.foto) return trainer;
+  try {
+    const dir = 'uploads/profiles';
+    if (!fs.existsSync(dir)) return trainer;
+    const files = fs.readdirSync(dir)
+      .filter(f => f.startsWith(`profile-${trainer.id}-`))
+      .sort()
+      .reverse();
+    if (files.length > 0) {
+      trainer.foto = `uploads/profiles/${files[0]}`;
+    }
+  } catch (e) {
+    // File system error, skip
+  }
+  return trainer;
+}
 
 export const getAllTrainers = async (req, res) => {
     try {
@@ -23,6 +44,12 @@ export const getAllTrainers = async (req, res) => {
         query += ' ORDER BY nama ASC';
 
         const rows = await db.query(query + ' LIMIT ? OFFSET ?', [...params, currentLimit, offset]);
+        
+        // Enrich foto dari filesystem untuk yg null
+        for (const row of rows) {
+          enrichTrainerPhoto(row);
+        }
+        
         const countResult = await db.query(countQuery, params);
         const total = Number(countResult[0]?.total || 0);
 
@@ -49,13 +76,16 @@ export const getTrainerById = async (req, res) => {
 
         const db = await getDBPool();
         const rows = await db.query(
-            "SELECT id, nama, email, propinsi, kota, created_at FROM user WHERE id = ? AND role = 'trainer'",
+            "SELECT id, nama, email, propinsi, kota, foto, created_at FROM user WHERE id = ? AND role = 'trainer'",
             [id]
         );
 
         if (rows.length === 0) {
             return res.status(404).json({ message: 'Trainer tidak ditemukan' });
         }
+
+        // Enrich foto dari filesystem
+        enrichTrainerPhoto(rows[0]);
 
         cache.set(cacheKey, rows[0]);
         res.json({ data: rows[0] });
