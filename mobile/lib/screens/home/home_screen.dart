@@ -269,12 +269,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         : (item['payment_amount'] ?? 0);
     final startTime = item['start_time'] != null
         ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(item['start_time']))
-        : '--';
+        : (item['session_start_time'] != null
+            ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(item['session_start_time']))
+            : '--');
     final trainerName = item['trainer_name'] ?? 'Trainer';
-    final trainerPhoto = item['trainer_photo'] ?? item['foto'] ?? '';
+    final trainerPhoto = item['trainer_photo'] ?? '';
     final status = item['status'] ?? '';
     final paymentStatus = item['payment_status'] ?? '';
-    final baseUrl = ApiService.baseUrl.replaceAll('/api', '');
+    final baseUrl = ApiService.photoBaseUrl;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -345,7 +347,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             color: theme.colorScheme.primary.withAlpha(25),
                             child: Center(
                               child: Text(
-                                trainerName[0].toUpperCase(),
+                                trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T',
                                 style: TextStyle(
                                   color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.bold,
@@ -364,7 +366,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              trainerName[0].toUpperCase(),
+                              trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T',
                               style: TextStyle(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.bold,
@@ -381,7 +383,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                     decoration: BoxDecoration(
-                      color: status == 'Confirmed'
+                      color: status == 'confirmed'
                           ? Colors.green[50]
                           : Colors.grey[100],
                       borderRadius: BorderRadius.circular(4),
@@ -389,7 +391,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: Text(
                       status,
                       style: TextStyle(
-                        color: status == 'Confirmed'
+                        color: status == 'confirmed'
                             ? Colors.green[700]
                             : Colors.grey[600],
                         fontSize: 9,

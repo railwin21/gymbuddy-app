@@ -64,6 +64,7 @@ export async function findById(id: number) {
         description: sessions.description,
         trainer_id: sessions.trainer_id,
         trainer_name: users.nama,
+        trainer_photo: users.foto,
         trainer_email: users.email,
         trainer_spesialisasi: users.spesialisasi,
         trainer_bio: users.bio,

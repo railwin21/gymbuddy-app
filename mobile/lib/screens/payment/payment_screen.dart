@@ -97,7 +97,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           _paymentStatus = paymentStatus;
         });
 
-        if (paymentStatus == 'settlement' || bookingStatus == 'Confirmed') {
+        if (paymentStatus == 'settlement' || bookingStatus == 'confirmed') {
           setState(() => _paymentDone = true);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

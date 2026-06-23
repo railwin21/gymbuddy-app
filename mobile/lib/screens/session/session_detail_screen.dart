@@ -110,11 +110,11 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                       ),
                     ),
                   ),
-                  if (_session?['deskripsi'] != null) ...[
+                  if (_session?['description'] != null) ...[
                     const SizedBox(height: 20),
                     Text('Deskripsi', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text(_session!['deskripsi'], style: TextStyle(color: Colors.grey[700], height: 1.5)),
+                    Text(_session!['description'], style: TextStyle(color: Colors.grey[700], height: 1.5)),
                   ],
                   const SizedBox(height: 32),
                   SizedBox(
@@ -173,7 +173,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                       height: 40,
                       color: Theme.of(context).colorScheme.primary.withAlpha(25),
                       child: Center(
-                        child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 16)),
                       ),
                     ),
                   )

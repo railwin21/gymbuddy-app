@@ -106,8 +106,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final res = await _api.login(email, password);
-      final token = res['token'] ?? res['data']?['token'];
-      final user = res['user'] ?? res['data']?['user'];
+      final token = res['data']?['token'] ?? res['token'];
+      final user = res['data']?['user'] ?? res['user'];
 
       if (token != null) {
         // Set token di cache ApiService IMMEDIATELY (synchronous)

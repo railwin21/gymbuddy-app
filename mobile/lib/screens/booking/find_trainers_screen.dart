@@ -65,28 +65,30 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
     final seenTrainers = <int>{};
     final query = _searchController.text.toLowerCase();
 
-    return _sessions
-        .where((s) {
-          final start = DateTime.tryParse(s['start_time'] ?? '') ?? DateTime.now();
-          return start.isAfter(minDate) || start.isAtSameMomentAs(minDate);
-        })
-        .toList()
-      ..sort((a, b) {
-        final aTime = DateTime.tryParse(a['start_time'] ?? '') ?? DateTime.now();
-        final bTime = DateTime.tryParse(b['start_time'] ?? '') ?? DateTime.now();
-        return aTime.compareTo(bTime);
-      })
-      ..where((s) {
-        final name = (s['trainer_name'] ?? '').toString().toLowerCase();
-        final title = (s['title'] ?? '').toString().toLowerCase();
-        if (query.isNotEmpty && !name.contains(query) && !title.contains(query)) {
-          return false;
-        }
-        final trainerId = s['trainer_id'] as int?;
-        if (trainerId != null && seenTrainers.contains(trainerId)) return false;
-        if (trainerId != null) seenTrainers.add(trainerId);
-        return true;
-      }).toList();
+    var result = _sessions.where((s) {
+      final start = DateTime.tryParse(s['start_time'] ?? '') ?? DateTime.now();
+      return start.isAfter(minDate) || start.isAtSameMomentAs(minDate);
+    }).toList();
+
+    result.sort((a, b) {
+      final aTime = DateTime.tryParse(a['start_time'] ?? '') ?? DateTime.now();
+      final bTime = DateTime.tryParse(b['start_time'] ?? '') ?? DateTime.now();
+      return aTime.compareTo(bTime);
+    });
+
+    result = result.where((s) {
+      final name = (s['trainer_name'] ?? '').toString().toLowerCase();
+      final title = (s['title'] ?? '').toString().toLowerCase();
+      if (query.isNotEmpty && !name.contains(query) && !title.contains(query)) {
+        return false;
+      }
+      final trainerId = s['trainer_id'] as int?;
+      if (trainerId != null && seenTrainers.contains(trainerId)) return false;
+      if (trainerId != null) seenTrainers.add(trainerId);
+      return true;
+    }).toList();
+
+    return result;
   }
 
   Future<void> _bookSession(int sessionId) async {

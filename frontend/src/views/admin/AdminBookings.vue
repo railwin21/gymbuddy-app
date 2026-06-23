@@ -12,9 +12,9 @@
       <select v-model="statusFilter" @change="fetchData"
               class="bg-[#0f1115] border border-gray-800 p-3 rounded-xl text-sm outline-none">
         <option value="">Semua Status</option>
-        <option value="Pending">Pending</option>
-        <option value="Confirmed">Confirmed</option>
-        <option value="Cancel">Cancel</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="cancelled">Cancelled</option>
       </select>
       <select v-model="paymentFilter" @change="fetchData"
               class="bg-[#0f1115] border border-gray-800 p-3 rounded-xl text-sm outline-none">
@@ -37,7 +37,7 @@
               <th class="py-4 px-6 text-[10px] font-black text-gray-500 uppercase">Status</th>
               <th class="py-4 px-6 text-[10px] font-black text-gray-500 uppercase">Pembayaran</th>
               <th class="py-4 px-6 text-[10px] font-black text-gray-500 uppercase">Jumlah</th>
-              <th class="py-4 px-6 text-[10px] font-black text-gray-500 uppercase">Tanggal</th>
+              <th class="py-4 px-6 text-[10px] font-black text-gray-500 uppercase">Tanggal & Waktu</th>
             </tr>
           </thead>
           <tbody>
@@ -54,7 +54,11 @@
                 <span v-else class="text-red-400 text-xs font-bold">✕ {{ b.payment_status }}</span>
               </td>
               <td class="py-4 px-6 text-sm font-bold">{{ formatRupiah(b.payment_amount) }}</td>
-              <td class="py-4 px-6 text-xs text-gray-500">{{ formatDate(b.datetime_created) }}</td>
+              <td class="py-4 px-6 text-xs text-gray-400">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500">{{ formatDateTime(b.session_start_time || b.createdAt) }}</span>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -73,7 +77,7 @@ const paymentFilter = ref('')
 
 const filteredBookings = computed(() => {
   return bookings.value.filter(b => {
-    if (statusFilter.value && b.status !== statusFilter.value) return false
+    if (statusFilter.value && b.status?.toLowerCase() !== statusFilter.value) return false
     if (paymentFilter.value && b.payment_status !== paymentFilter.value) return false
     return true
   })
@@ -88,11 +92,16 @@ const fetchData = async () => {
 
 const statusBadge = (s) => {
   const map = { pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', confirmed: 'bg-green-500/10 text-green-500 border-green-500/20', cancelled: 'bg-red-500/10 text-red-500 border-red-500/20' }
-  return map[s] || ''
+  return map[s?.toLowerCase()] || ''
 }
 
 const formatRupiah = (p) => p ? `Rp${Number(p).toLocaleString('id-ID')}` : 'Rp0'
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-'
+const formatDateTime = (d) => {
+  if (!d) return '-'
+  const date = new Date(d)
+  return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) +
+    ' • ' + date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+}
 
 onMounted(fetchData)
 </script>

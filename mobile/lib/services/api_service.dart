@@ -98,7 +98,9 @@ class ApiService {
 
   Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
     try {
-      final res = await _dio.post('/auth/register', data: data);
+      final role = data.remove('role') ?? 'customer';
+      final endpoint = role == 'trainer' ? '/auth/register/trainer' : '/auth/register';
+      final res = await _dio.post(endpoint, data: data);
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -127,7 +129,7 @@ class ApiService {
   // ==================== SESSIONS ====================
   Future<Map<String, dynamic>> getSessions({int page = 1, int limit = 10, String? search, String? kota}) async {
     try {
-      final params = <String, dynamic>{'_page': page, '_limit': limit};
+      final params = <String, dynamic>{'page': page, 'limit': limit};
       if (search != null) params['search'] = search;
       if (kota != null) params['kota'] = kota;
       final res = await _dio.get('/sessions', queryParameters: params);
@@ -171,7 +173,7 @@ class ApiService {
   Future<Map<String, dynamic>> cancelBooking(int id) async {
     try {
       final res = await _dio.patch('/bookings/$id/status', data: {
-        'status': 'Cancel',
+        'status': 'cancelled',
       });
       return {'success': true, 'message': res.data['message'] ?? 'Booking dibatalkan'};
     } catch (e) {
@@ -213,7 +215,7 @@ class ApiService {
   Future<Map<String, dynamic>> getTrainers({String? search, String? kota}) async {
     try {
       final params = <String, dynamic>{};
-      if (search != null) params['nama'] = search;
+      if (search != null) params['search'] = search;
       if (kota != null) params['kota'] = kota;
       final res = await _dio.get('/trainers', queryParameters: params);
       return {'success': true, 'data': res.data['data'] ?? [], 'total': res.data['total'] ?? 0};
@@ -226,7 +228,7 @@ class ApiService {
   Future<Map<String, dynamic>> getArticles({int page = 1, int limit = 10}) async {
     try {
       final res = await _dio.get('/articles', queryParameters: {
-        '_page': page, '_limit': limit,
+        'page': page, 'limit': limit,
       });
       return res.data;
     } catch (e) {
@@ -382,7 +384,7 @@ class ApiService {
   // ==================== ADMIN ====================
   Future<Map<String, dynamic>> adminGetDashboard() async {
     try {
-      final res = await _dio.get('/sessions', queryParameters: {'_limit': 100});
+      final res = await _dio.get('/sessions', queryParameters: {'limit': 100});
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -392,7 +394,7 @@ class ApiService {
   Future<Map<String, dynamic>> adminGetUsers({int page = 1, int limit = 20}) async {
     try {
       final res = await _dio.get('/users', queryParameters: {
-        '_page': page, '_limit': limit,
+        'page': page, 'limit': limit,
       });
       return {'success': true, 'data': res.data['data'] ?? []};
     } catch (e) {

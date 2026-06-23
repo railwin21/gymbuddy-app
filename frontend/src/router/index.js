@@ -23,11 +23,6 @@ const AdminDashboard = () => import('../views/admin/AdminDashboard.vue')
 const AdminUsers = () => import('../views/admin/AdminUsers.vue')
 const AdminTrainers = () => import('../views/admin/AdminTrainers.vue')
 const AdminBookings = () => import('../views/admin/AdminBookings.vue')
-const AdminArticles = () => import('../views/admin/AdminArticles.vue')
-const AdminPromo = () => import('../views/admin/AdminPromo.vue')
-const AdminFaq = () => import('../views/admin/AdminFaq.vue')
-const AdminBanners = () => import('../views/admin/AdminBanners.vue')
-const AdminNotifications = () => import('../views/admin/AdminNotifications.vue')
 
 const routes = [
   { path: '/', component: Home },
@@ -58,11 +53,6 @@ const routes = [
   { path: '/admin/trainers', component: AdminTrainers, meta: { requiresAdmin: true } },
   { path: '/admin/bookings', component: AdminBookings, meta: { requiresAdmin: true } },
   { path: '/admin/payments', component: AdminBookings, meta: { requiresAdmin: true } },
-  { path: '/admin/articles', component: AdminArticles, meta: { requiresAdmin: true } },
-  { path: '/admin/promo', component: AdminPromo, meta: { requiresAdmin: true } },
-  { path: '/admin/faq', component: AdminFaq, meta: { requiresAdmin: true } },
-  { path: '/admin/banners', component: AdminBanners, meta: { requiresAdmin: true } },
-  { path: '/admin/notifications', component: AdminNotifications, meta: { requiresAdmin: true } },
 ]
 
 const router = createRouter({

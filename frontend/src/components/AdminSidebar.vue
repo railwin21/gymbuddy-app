@@ -38,11 +38,6 @@ import {
   UserCogIcon,
   CalendarCheckIcon,
   WalletIcon,
-  FileTextIcon,
-  TagIcon,
-  HelpCircleIcon,
-  ImageIcon,
-  BellIcon,
   ArrowLeftIcon,
   LogOutIcon
 } from 'lucide-vue-next'
@@ -56,11 +51,6 @@ const navItems = [
   { path: '/admin/trainers', label: 'Trainer', icon: UserCogIcon },
   { path: '/admin/bookings', label: 'Booking', icon: CalendarCheckIcon },
   { path: '/admin/payments', label: 'Pembayaran', icon: WalletIcon },
-  { path: '/admin/articles', label: 'Artikel', icon: FileTextIcon },
-  { path: '/admin/promo', label: 'Promo', icon: TagIcon },
-  { path: '/admin/faq', label: 'FAQ', icon: HelpCircleIcon },
-  { path: '/admin/banners', label: 'Banner', icon: ImageIcon },
-  { path: '/admin/notifications', label: 'Notifikasi', icon: BellIcon },
 ]
 
 const isActive = (path) => route.path.startsWith(path)

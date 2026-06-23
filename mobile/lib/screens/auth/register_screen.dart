@@ -16,6 +16,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _spesialisasiController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   String _selectedRole = 'customer';
@@ -26,18 +27,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _spesialisasiController.dispose();
     super.dispose();
   }
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final success = await ref.read(authProvider.notifier).register({
+    final data = <String, dynamic>{
       'nama': _namaController.text.trim(),
       'email': _emailController.text.trim(),
       'password': _passwordController.text,
       'role': _selectedRole,
-    });
+    };
+    if (_selectedRole == 'trainer') {
+      data['spesialisasi'] = _spesialisasiController.text.trim();
+    }
+
+    final success = await ref.read(authProvider.notifier).register(data);
 
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -205,6 +212,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       if (v != null) setState(() => _selectedRole = v);
                     },
                   ),
+                  if (_selectedRole == 'trainer') ...[
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _spesialisasiController,
+                      decoration: const InputDecoration(
+                        labelText: 'Spesialisasi',
+                        prefixIcon: Icon(Icons.fitness_center),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (v) {
+                        if (_selectedRole == 'trainer' && (v == null || v.isEmpty)) {
+                          return 'Spesialisasi wajib diisi untuk trainer';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
                   const SizedBox(height: 24),
 
                   // Register button

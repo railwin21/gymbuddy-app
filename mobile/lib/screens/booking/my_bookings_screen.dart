@@ -166,11 +166,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     }
 
     final activeBookings = _bookings.where((b) =>
-      b['status'] == 'Pending' || b['status'] == 'Confirmed'
+      b['status'] == 'pending' || b['status'] == 'confirmed'
     ).toList();
 
     final pastBookings = _bookings.where((b) =>
-      b['status'] == 'Cancel' || b['status'] == 'Completed'
+      b['status'] == 'cancelled' || b['status'] == 'completed'
     ).toList();
 
     return RefreshIndicator(
@@ -351,7 +351,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  if (status == 'Pending' && paymentStatus != 'settlement')
+                  if (status == 'pending' && paymentStatus != 'settlement')
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () => _payBooking(bookingId),
@@ -365,9 +365,9 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                         child: const Text('Bayar', style: TextStyle(fontSize: 12)),
                       ),
                     ),
-                  if (status == 'Pending')
+                  if (status == 'pending')
                     const SizedBox(width: 8),
-                  if (status == 'Pending')
+                  if (status == 'pending')
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => _cancelBooking(bookingId),
@@ -399,11 +399,11 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
       bgColor = Colors.green[50]!;
       textColor = Colors.green[700]!;
       label = 'LUNAS';
-    } else if (status == 'Confirmed') {
+    } else if (status == 'confirmed') {
       bgColor = Colors.blue[50]!;
       textColor = Colors.blue[700]!;
       label = 'KONFIRM';
-    } else if (status == 'Cancel') {
+    } else if (status == 'cancelled') {
       bgColor = Colors.red[50]!;
       textColor = Colors.red[700]!;
       label = 'BATAL';

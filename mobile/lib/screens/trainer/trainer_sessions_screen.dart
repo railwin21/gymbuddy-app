@@ -90,7 +90,7 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
   Future<void> _showSessionForm({dynamic session}) async {
     final isEdit = session != null;
     final titleController = TextEditingController(text: isEdit ? session['title'] : '');
-    final descController = TextEditingController(text: isEdit ? session['deskripsi'] : '');
+    final descController = TextEditingController(text: isEdit ? session['description'] : '');
     final priceController = TextEditingController(text: isEdit ? (session['price'] ?? 0).toString() : '150000');
     
     DateTime? startTime = isEdit && session['start_time'] != null ? DateTime.parse(session['start_time']) : null;
@@ -196,10 +196,9 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
                     
                     final payload = {
                       'title': titleController.text.trim(),
-                      'deskripsi': descController.text.trim(),
-                      'trainer_id': ref.read(authProvider).user?['id'],
-                      'start_time': DateFormat('yyyy-MM-dd HH:mm:ss').format(startTime!),
-                      'end_time': endTime != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(endTime!) : null,
+                      'description': descController.text.trim(),
+                      'start_time': startTime!.toIso8601String(),
+                      'end_time': endTime?.toIso8601String(),
                       'price': double.tryParse(priceController.text) ?? 0,
                     };
 
