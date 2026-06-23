@@ -51,9 +51,9 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 32),
             Text('Hubungi Kami', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
-            _contactItem(Icons.email, 'Email', 'support@gymbuddy.site'),
+            _contactItem(Icons.email, 'Email', 'support@gmail.com'),
             _contactItem(Icons.location_on, 'Lokasi', 'Purwokerto, Jawa Tengah'),
-            _contactItem(Icons.language, 'Web', 'gymbuddy.site'),
+            _contactItem(Icons.language, 'Web', 'frontend-three-bay-49.vercel.app'),
             const SizedBox(height: 24),
             Center(
               child: Text('v1.0.0  •  © 2026 GymBuddy', style: TextStyle(color: Colors.grey[500])),

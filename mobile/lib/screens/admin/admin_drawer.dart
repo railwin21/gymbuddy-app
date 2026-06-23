@@ -19,7 +19,7 @@ class AdminDrawer extends ConsumerWidget {
           UserAccountsDrawerHeader(
             decoration: BoxDecoration(color: theme.colorScheme.primary),
             accountName: Text(auth.user?['nama'] ?? 'Admin GymBuddy', style: const TextStyle(fontWeight: FontWeight.bold)),
-            accountEmail: Text(auth.user?['email'] ?? 'admin@gymbuddy.site'),
+            accountEmail: Text(auth.user?['email'] ?? 'admin@gmail.com'),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(

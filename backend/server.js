@@ -35,10 +35,11 @@ app.use(helmet({
 }))
 app.use(compression())
 
-// CORS - lebih ketat
 const allowedOrigins = [
     process.env.FRONTEND_URL || 'http://localhost:5173',
-    'https://gymbuddy.site',
+    'https://frontend-20321607-ctrls-projects.vercel.app',
+    'https://frontend-three-bay-49.vercel.app',
+    'https://dist-alpha-five-98.vercel.app',
     'http://localhost:3000',
     'http://localhost:5000'
 ]

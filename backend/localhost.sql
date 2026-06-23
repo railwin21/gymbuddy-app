@@ -273,11 +273,11 @@ CREATE TABLE `diet_programs` (
 -- SEED DATA: Admin default
 -- ============================================================
 INSERT INTO `user` (`nama`, `email`, `password`, `role`, `jenis_kelamin`, `no_telp`, `kota`, `spesialisasi`, `bio`) VALUES
-('Admin GymBuddy', 'admin@gymbuddy.site', '$2b$10$8U5ecdrkOX6RpJ04X.E4LOV7VZDEVvtjzyFG1GHv20dVEGjbYHPDS', 'admin', 'L', '081234567890', 'Purwokerto', NULL, 'Admin Platform GymBuddy'),
-('Fadhel Setiawan', 'fadhel@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567893', 'Purwokerto', 'Hypertrophy Coach', 'Spesialis pembentukan otot dan program hypertrophy untuk hasil maksimal'),
-('Arif Rachman', 'arif@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567894', 'Purwokerto', 'Lose Weight Coach', 'Ahli program penurunan berat badan dengan pendekatan ilmiah dan terukur'),
-('Gusti Caesar Yuliawan', 'gusti@gymbuddy.site', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567895', 'Purwokerto', 'Strength Coach', 'Pelatih strength training profesional dengan pengalaman lebih dari 5 tahun'),
-('Siti Rahmawati', 'user@gymbuddy.site', '$2b$10$GtJBBDGfoRkW3JdlF6AY.ufoZcWfv/FMwW1zV3Uk/4oy5ZKdTbQai', 'customer', 'P', '081234567892', 'Purwokerto', NULL, 'Member GymBuddy');
+('Admin GymBuddy', 'admin@gmail.com', '$2b$10$8U5ecdrkOX6RpJ04X.E4LOV7VZDEVvtjzyFG1GHv20dVEGjbYHPDS', 'admin', 'L', '081234567890', 'Purwokerto', NULL, 'Admin Platform GymBuddy'),
+('Fadhel Setiawan', 'fadhel@gmail.com', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567893', 'Purwokerto', 'Hypertrophy Coach', 'Spesialis pembentukan otot dan program hypertrophy untuk hasil maksimal'),
+('Arif Rachman', 'arif@gmail.com', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567894', 'Purwokerto', 'Lose Weight Coach', 'Ahli program penurunan berat badan dengan pendekatan ilmiah dan terukur'),
+('Gusti Caesar Yuliawan', 'gusti@gmail.com', '$2b$10$doLA4P.QxJoB6u.X2aY7Z..Ld1TrWYFd0pn.Vs1Xu7Il3Fqyw1/wm', 'trainer', 'L', '081234567895', 'Purwokerto', 'Strength Coach', 'Pelatih strength training profesional dengan pengalaman lebih dari 5 tahun'),
+('Siti Rahmawati', 'user@gmail.com', '$2b$10$GtJBBDGfoRkW3JdlF6AY.ufoZcWfv/FMwW1zV3Uk/4oy5ZKdTbQai', 'customer', 'P', '081234567892', 'Purwokerto', NULL, 'Member GymBuddy');
 
 -- ============================================================
 -- SEED DATA: FAQ default

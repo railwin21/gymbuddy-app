@@ -213,7 +213,7 @@ flutter build ios
 
 ### Untuk Admin
 
-1. Login sebagai akun admin (`admin@gymbuddy.site` / `admin123`)
+1. Login sebagai akun admin (`admin@gmail.com` / `admin123`)
 2. Dashboard admin dengan statistik lengkap (total users, sessions, bookings)
 3. **Kelola Users** — Lihat, cari, dan hapus user
 4. **Kelola Trainer** — Daftar trainer terdaftar
@@ -232,11 +232,11 @@ flutter build ios
 
 | Role | Email | Password |
 |------|-------|----------|
-| **👤 Member** | `user@gymbuddy.site` | `user123` |
-| **🏋️ Trainer 1** | `fadhel@gymbuddy.site` | `trainer123` |
-| **🏋️ Trainer 2** | `arif@gymbuddy.site` | `trainer123` |
-| **🏋️ Trainer 3** | `gusti@gymbuddy.site` | `trainer123` |
-| **🛠️ Admin** | `admin@gymbuddy.site` | `admin123` |
+| **👤 Member** | `user@gmail.com` | `user123` |
+| **🏋️ Trainer 1** | `fadhel@gmail.com` | `trainer123` |
+| **🏋️ Trainer 2** | `arif@gmail.com` | `trainer123` |
+| **🏋️ Trainer 3** | `gusti@gmail.com` | `trainer123` |
+| **🛠️ Admin** | `admin@gmail.com` | `admin123` |
 
 ### Kartu Kredit Test Midtrans (Sandbox)
 

@@ -71,7 +71,7 @@ export const createPayment = async (req, res) => {
             },
             customer_details: {
                 first_name: booking.member_name || 'Member',
-                email: booking.member_email || 'member@gymbuddy.site'
+                email: booking.member_email || 'member@gmail.com'
             },
             item_details: [{
                 id: `SESSION-${booking.session_id}`,

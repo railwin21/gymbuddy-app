@@ -61,7 +61,7 @@
           </div>
           <div>
             <label class="text-[9px] font-black uppercase text-gray-600 block mb-2">Link Tujuan (opsional)</label>
-            <input v-model="form.link" type="url" autocomplete="url" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" placeholder="https://gymbuddy.site/...">
+            <input v-model="form.link" type="url" autocomplete="url" class="w-full bg-black/40 border border-gray-900 rounded-xl px-4 py-3 text-sm focus:border-red-500 outline-none" placeholder="https://example.com/...">
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
