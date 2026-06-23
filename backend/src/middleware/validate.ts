@@ -20,7 +20,11 @@ export function validate(schema: ZodSchema) {
         if (!result.success) {
             return error(res, 'Input tidak valid', 400, 'VALIDATION_ERROR', result.error.issues);
         }
-        req.validated = result.data as { body?: unknown; params?: unknown; query?: unknown };
+        const data = result.data as { body?: unknown; params?: unknown; query?: unknown };
+        req.validated = {
+            ...(req.validated ?? {}),
+            ...data,
+        };
         next();
     };
 }

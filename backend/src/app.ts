@@ -6,6 +6,10 @@ import { rateLimit } from 'express-rate-limit';
 import path from 'path';
 import { env } from './config/env';
 import { notFoundHandler, errorHandler } from './middleware/error';
+import authRoutes from './modules/auth/auth.routes';
+import userRoutes from './modules/user/user.routes';
+import sessionRoutes from './modules/session/session.routes';
+import trainerRoutes from './modules/trainer/trainer.routes';
 
 const app = express();
 
@@ -66,6 +70,11 @@ app.get('/api/health', (_req, res) => {
         },
     });
 });
+
+app.use('/api/v1/auth', authLimiter, authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/sessions', sessionRoutes);
+app.use('/api/v1/trainers', trainerRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

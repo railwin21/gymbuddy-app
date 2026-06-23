@@ -1,0 +1,42 @@
+import { eq } from 'drizzle-orm';
+import { db } from '../../db/client';
+import { users } from '../../db/schema';
+
+export async function findUserByEmail(email: string) {
+    const rows = await db.select().from(users).where(eq(users.email, email)).limit(1);
+    return rows[0] ?? null;
+}
+
+export async function findUserById(id: number) {
+    const rows = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return rows[0] ?? null;
+}
+
+export async function createUser(data: {
+    nama: string;
+    email: string;
+    password: string;
+    role: 'customer' | 'trainer' | 'admin';
+    jenis_kelamin?: string;
+    no_telp?: string;
+    tanggal_lahir?: string;
+    propinsi?: string;
+    kota?: string;
+    spesialisasi?: string;
+    bio?: string;
+}) {
+    const rows = await db.insert(users).values({
+        nama: data.nama,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        jenis_kelamin: data.jenis_kelamin as 'L' | 'P' | null,
+        no_telp: data.no_telp,
+        tanggal_lahir: data.tanggal_lahir,
+        propinsi: data.propinsi ?? '',
+        kota: data.kota ?? '',
+        spesialisasi: data.spesialisasi,
+        bio: data.bio,
+    }).returning();
+    return rows[0];
+}
