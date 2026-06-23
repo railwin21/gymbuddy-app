@@ -22,7 +22,7 @@ A Node.js backend for managing fitness sessions, bookings, member progress, and 
 - MySQL database
 
 ## live server
-https://gymbuddy-api-ci05.onrender.com/api
+https://gymbuddy-api-production-81df.up.railway.app/api
 
 
 ## Installation

@@ -11,7 +11,7 @@ class ApiService {
   late final Dio _dio;
 
   // Untuk development, ganti ke localhost. Untuk production, pakai Render.
-  static const String _prodUrl = 'https://gymbuddy-api-ci05.onrender.com/api';
+  static const String _prodUrl = 'https://gymbuddy-api-production-81df.up.railway.app/api';
   static const String _devUrl = 'http://localhost:5000/api';
   static const bool _isProduction = true; // Using Railway production backend
 
