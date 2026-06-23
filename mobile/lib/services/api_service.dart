@@ -10,6 +10,9 @@ class ApiService {
 
   late final Dio _dio;
 
+  // Static token agar bisa diakses synchronously oleh interceptor
+  static String? _cachedToken;
+
   // Untuk development, ganti ke localhost. Untuk production, pakai Render.
   static const String _prodUrl = 'https://gymbuddy-api-production-81df.up.railway.app/api';
   static const String _devUrl = 'http://localhost:5000/api';
@@ -17,7 +20,14 @@ class ApiService {
 
   static String get baseUrl => _isProduction ? _prodUrl : _devUrl;
 
+  /// Set token synchronously (dipanggil setelah login sukses)
+  static void setToken(String? token) {
+    _cachedToken = token;
+  }
+
   ApiService._internal() {
+    // Token already loaded by initAuthToken() in main.dart
+
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 15),
@@ -26,16 +36,16 @@ class ApiService {
     ));
 
     _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        final prefs = await SharedPreferences.getInstance();
-        final token = prefs.getString('token');
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
+      onRequest: (options, handler) {
+        // Gunakan cached token (synchronous, no await)
+        if (_cachedToken != null) {
+          options.headers['Authorization'] = 'Bearer $_cachedToken';
         }
         return handler.next(options);
       },
       onError: (error, handler) async {
         if (error.response?.statusCode == 401) {
+          _cachedToken = null;
           final prefs = await SharedPreferences.getInstance();
           await prefs.remove('token');
         }

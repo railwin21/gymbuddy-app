@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'routing/app_router.dart';
+import 'services/auth_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Load token ke cache ApiService sebelum app jalan
+  await initAuthToken();
   runApp(const ProviderScope(child: GymBuddyApp()));
 }
 

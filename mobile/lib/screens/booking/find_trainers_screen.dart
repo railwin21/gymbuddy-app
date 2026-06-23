@@ -236,16 +236,26 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
     final kota = trainer['kota'] ?? '';
     final baseUrl = ApiService.baseUrl.replaceAll('/api', '');
 
+    // Gradient colors based on trainer index untuk variasi visual
+    final gradients = [
+      [const Color(0xFFE53935), const Color(0xFF1565C0)], // Red to Blue
+      [const Color(0xFF43A047), const Color(0xFF1B5E20)], // Green
+      [const Color(0xFFFF6F00), const Color(0xFFBF360C)], // Orange to Deep Orange
+    ];
+    final gradientIdx = name.hashCode % gradients.length;
+    final gradientColors = gradients[gradientIdx];
+
     return Container(
       width: 160,
       margin: const EdgeInsets.only(right: 12),
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 2,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 16),
-            // Photo
+            // Photo with gradient fallback
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: foto.isNotEmpty
@@ -257,23 +267,39 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
                       placeholder: (ctx, url) => Container(
                         width: 80,
                         height: 80,
-                        color: Colors.grey[200],
-                        child: const Center(
-                          child: SizedBox(
-                            width: 20, height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: gradientColors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            name[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
                           ),
                         ),
                       ),
                       errorWidget: (ctx, url, err) => Container(
                         width: 80,
                         height: 80,
-                        color: theme.colorScheme.primary.withAlpha(30),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: gradientColors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
                         child: Center(
                           child: Text(
                             name[0].toUpperCase(),
-                            style: TextStyle(
-                              color: theme.colorScheme.primary,
+                            style: const TextStyle(
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 28,
                             ),
@@ -285,14 +311,18 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withAlpha(30),
+                        gradient: LinearGradient(
+                          colors: gradientColors,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
                         child: Text(
                           name[0].toUpperCase(),
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
+                          style: const TextStyle(
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 28,
                           ),
