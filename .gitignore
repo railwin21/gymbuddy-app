@@ -14,5 +14,7 @@ mobile/.flutter-plugins
 mobile/.flutter-plugins-dependencies
 backend/uploads/profiles/*
 !backend/uploads/profiles/.gitkeep
+backend/uploads/*
+!backend/uploads/.gitkeep
 frontend/dist/
 .vercel

@@ -1,5 +1,6 @@
 import Midtrans from 'midtrans-client';
 import { env } from '../../config/env';
+import { logger } from '../../utils/logger';
 import {
     findBookingForPayment,
     findBookingByOrderId,
@@ -51,6 +52,10 @@ export async function createPayment(bookingId: number, memberId: number) {
         throw new PaymentError(400, 'VALIDATION_ERROR', 'Harga sesi tidak valid');
     }
 
+    if (!env.MIDTRANS_SERVER_KEY || !env.MIDTRANS_CLIENT_KEY) {
+        throw new PaymentError(400, 'CONFIG_ERROR', 'Midtrans server key atau client key belum dikonfigurasi di environment');
+    }
+
     const orderId = `GB-${bookingId}-${Date.now()}`;
 
     const parameter = {
@@ -74,7 +79,14 @@ export async function createPayment(bookingId: number, memberId: number) {
         },
     };
 
-    const transaction = await snap.createTransaction(parameter);
+    let transaction;
+    try {
+        transaction = await snap.createTransaction(parameter);
+    } catch (midtransErr: any) {
+        const midtransMessage = midtransErr?.ApiResponse?.error_messages?.join(', ') || midtransErr?.message || JSON.stringify(midtransErr);
+        logger.error({ err: midtransErr, bookingId }, '[PAYMENT] Midtrans createTransaction failed');
+        throw new PaymentError(400, 'MIDTRANS_ERROR', `Gagal membuat transaksi Midtrans: ${midtransMessage}`);
+    }
 
     await updatePayment({
         bookingId,
@@ -159,7 +171,7 @@ export async function checkPaymentStatus(bookingId: number, memberId: number) {
 
     if (booking.midtrans_order_id) {
         try {
-            const statusResponse = await snap.transaction.status(booking.midtrans_order_id);
+            const statusResponse = await core.transaction.status(booking.midtrans_order_id);
 
             if (statusResponse.transaction_status !== booking.payment_status) {
                 let newPaymentStatus = statusResponse.transaction_status;

@@ -37,7 +37,9 @@ export const env = parsed.data;
 export const dbConfig = env.DATABASE_URL
     ? {
           connectionString: env.DATABASE_URL,
-          ssl: env.DB_SSL === 'true' ? { rejectUnauthorized: false } : undefined,
+          ssl: env.DB_SSL === 'true' || env.DATABASE_URL.includes('neon.tech') || env.DATABASE_URL.includes('sslmode=require')
+              ? { rejectUnauthorized: false }
+              : undefined,
           max: 10,
       }
     : {

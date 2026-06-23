@@ -33,6 +33,7 @@ export async function findAll(opts: {
         description: sessions.description,
         trainer_id: sessions.trainer_id,
         trainer_name: users.nama,
+        trainer_photo: users.foto,
         start_time: sessions.start_time,
         end_time: sessions.end_time,
         price: sessions.price,

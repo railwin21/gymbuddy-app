@@ -33,9 +33,10 @@ async function handle(fn: () => Promise<any>, res: Response, statusCode = 200) {
         return success(res, result, 'Berhasil', statusCode);
     } catch (err) {
         if (err instanceof PaymentError) {
+            logger.warn({ err, statusCode: err.statusCode, code: err.code }, '[PAYMENT] PaymentError');
             return error(res, err.message, err.statusCode, err.code);
         }
-        logger.error({ err }, '[PAYMENT] Unhandled error');
+        logger.error({ err, stack: (err as Error)?.stack }, '[PAYMENT] Unhandled error');
         return error(res, 'Terjadi kesalahan server', 500, 'INTERNAL_ERROR');
     }
 }

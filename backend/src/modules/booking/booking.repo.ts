@@ -88,9 +88,12 @@ export async function findByMember(memberId: number) {
         session_title: sessions.title,
         session_start_time: sessions.start_time,
         session_price: sessions.price,
+        trainer_name: users.nama,
+        trainer_photo: users.foto,
     })
     .from(bookings)
     .leftJoin(sessions, eq(bookings.session_id, sessions.id))
+    .leftJoin(users, eq(sessions.trainer_id, users.id))
     .where(eq(bookings.member_id, memberId))
     .orderBy(desc(bookings.createdAt));
     return rows;
