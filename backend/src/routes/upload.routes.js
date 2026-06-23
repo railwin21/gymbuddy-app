@@ -28,10 +28,8 @@ router.post('/profile', authMiddleware, (req, res) => {
       try {
         const filePath = req.file.path.replace(/\\/g, '/');
 
-        // Gunakan connection langsung (bukan pool.query) untuk memastikan query tereksekusi
-        const result = await conn.query('UPDATE user SET foto = ? WHERE id = ?', [filePath, req.user.id]);
-        console.log('[Upload] DB update result:', JSON.stringify(result));
-        console.log('[Upload] foto set to:', filePath, 'for user:', req.user.id);
+        // Update foto di database
+        await conn.query('UPDATE user SET foto = ? WHERE id = ?', [filePath, req.user.id]);
 
         cache.del(`user_${req.user.id}`);
         cache.del('all_users');

@@ -97,12 +97,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ? BottomNavigationBar(
               currentIndex: 0,
               onTap: (i) {
-                // Gunakan push() agar back button (pop()) bisa navigasi kembali
-                if (i == 0) context.go('/');
-                if (i == 1 && !auth.isTrainer && !auth.isAdmin) context.push('/find-trainers');
-                if (i == 1 && auth.isTrainer) context.push('/my-bookings');
-                if (i == 1 && auth.isAdmin) context.push('/admin');
-                if (i == 2 && !auth.isTrainer) context.push('/my-bookings');
+                // Gunakan go() untuk tab switch (ganti route, bukan push)
+                if (i == 0 && ModalRoute.of(context)?.settings.name != '/') context.go('/');
+                if (i == 1 && !auth.isTrainer && !auth.isAdmin) context.go('/find-trainers');
+                if (i == 1 && auth.isTrainer) context.go('/my-bookings');
+                if (i == 1 && auth.isAdmin) context.go('/admin');
+                if (i == 2 && !auth.isTrainer) context.go('/my-bookings');
               },
               selectedItemColor: theme.colorScheme.primary,
               items: [
