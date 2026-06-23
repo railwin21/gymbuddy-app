@@ -311,8 +311,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   ImageProvider? _getProfileImage(Map<String, dynamic>? user) {
     final foto = user?['foto'] as String?;
     if (foto == null || foto.isEmpty) return null;
-    final base = ApiService.baseUrl.replaceAll('/api', '');
-    return CachedNetworkImageProvider('$base/$foto');
+    return CachedNetworkImageProvider('${ApiService.photoBaseUrl}/$foto');
   }
 
   String _getInitials(String? name) {

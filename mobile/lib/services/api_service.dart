@@ -10,12 +10,12 @@ class ApiService {
 
   late final Dio _dio;
 
-  // Untuk development, ganti ke localhost. Untuk production, pakai Render.
-  static const String _prodUrl = 'https://gymbuddy-api-production-81df.up.railway.app/api';
-  static const String _devUrl = 'http://localhost:5000/api';
-  static const bool _isProduction = true; // Using Railway production backend
+  static const String _prodUrl = 'https://api.gymbuddy.site/api/v1';
+  static const String _devUrl = 'http://localhost:5000/api/v1';
+  static const bool _isProduction = true;
 
   static String get baseUrl => _isProduction ? _prodUrl : _devUrl;
+  static String get photoBaseUrl => baseUrl.replaceAll('/api/v1', '');
 
   /// Set token langsung ke default headers Dio dan cache
   static void setToken(String? token) {
@@ -108,8 +108,8 @@ class ApiService {
   // ==================== USER / PROFILE ====================
   Future<Map<String, dynamic>> getUserProfile() async {
     try {
-      final res = await _dio.get('/user/profile');
-      return {'success': true, 'data': res.data};
+      final res = await _dio.get('/users/profile');
+      return {'success': true, 'data': res.data['data'] ?? res.data};
     } catch (e) {
       return _handleError(e);
     }
@@ -117,8 +117,8 @@ class ApiService {
 
   Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> data) async {
     try {
-      final res = await _dio.put('/user/profile', data: data);
-      return {'success': true, 'message': res.data['message'] ?? 'Profil berhasil diperbarui'};
+      final res = await _dio.put('/users/profile', data: data);
+      return {'success': true, 'message': res.data['message'] ?? 'Profil berhasil diperbarui', 'data': res.data['data']};
     } catch (e) {
       return _handleError(e);
     }
@@ -246,7 +246,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> getMyProgress() async {
     try {
-      final res = await _dio.get('/progress/my');
+      final res = await _dio.get('/progress');
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -279,7 +279,7 @@ class ApiService {
   // ==================== PROMO ====================
   Future<Map<String, dynamic>> checkPromo(String kode) async {
     try {
-      final res = await _dio.get('/promo/check', queryParameters: {'kode': kode});
+      final res = await _dio.get('/promos/code/$kode');
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -292,7 +292,7 @@ class ApiService {
       final params = <String, dynamic>{
         if (kategori != null) 'kategori': kategori,
       };
-      final res = await _dio.get('/faq', queryParameters: params);
+      final res = await _dio.get('/faqs', queryParameters: params);
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -302,7 +302,7 @@ class ApiService {
   // ==================== NOTIFICATIONS ====================
   Future<Map<String, dynamic>> getNotifications() async {
     try {
-      final res = await _dio.get('/notifications/my');
+      final res = await _dio.get('/notifications');
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -344,7 +344,7 @@ class ApiService {
   // ==================== TRAINER VIEWS ====================
   Future<Map<String, dynamic>> getTrainerBookingHistory() async {
     try {
-      final res = await _dio.get('/views/customer-booking-history');
+      final res = await _dio.get('/bookings/my');
       return {'success': true, 'data': res.data['data'] ?? []};
     } catch (e) {
       return _handleError(e);
@@ -382,7 +382,7 @@ class ApiService {
   // ==================== ADMIN ====================
   Future<Map<String, dynamic>> adminGetDashboard() async {
     try {
-      final res = await _dio.get('/analytics/dashboard');
+      final res = await _dio.get('/sessions', queryParameters: {'_limit': 100});
       return res.data;
     } catch (e) {
       return _handleError(e);
@@ -391,7 +391,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> adminGetUsers({int page = 1, int limit = 20}) async {
     try {
-      final res = await _dio.get('/user/', queryParameters: {
+      final res = await _dio.get('/users', queryParameters: {
         '_page': page, '_limit': limit,
       });
       return {'success': true, 'data': res.data['data'] ?? []};
@@ -402,7 +402,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> adminDeleteUser(int id) async {
     try {
-      final res = await _dio.delete('/user/$id');
+      final res = await _dio.delete('/users/$id');
       return {'success': true, 'message': res.data['message'] ?? 'User berhasil dihapus'};
     } catch (e) {
       return _handleError(e);
@@ -411,7 +411,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> adminGetPromos() async {
     try {
-      final res = await _dio.get('/promo');
+      final res = await _dio.get('/promos');
       return {'success': true, 'data': res.data['data'] ?? []};
     } catch (e) {
       return _handleError(e);

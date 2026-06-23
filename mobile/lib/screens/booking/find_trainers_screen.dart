@@ -16,9 +16,10 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
   final _api = ApiService();
   final _searchController = TextEditingController();
   List<dynamic> _sessions = [];
-  List<dynamic> _trainers = [];
+  List<dynamic> _myBookings = [];
   bool _loading = true;
   String? _error;
+  Set<int> _bookedSessionIds = {};
 
   @override
   void initState() {
@@ -35,14 +36,20 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
   Future<void> _loadData({String? search}) async {
     setState(() => _loading = true);
     try {
-      // Load both sessions and trainers in parallel
       final results = await Future.wait([
-        _api.getSessions(limit: 20, search: search),
-        _api.getTrainers(),
+        _api.getSessions(limit: 50, search: search),
+        _api.getMyBookings(),
       ]);
+      final sessions = (results[0]['data'] as List?) ?? [];
+      final bookings = (results[1]['data'] as List?) ?? [];
       setState(() {
-        _sessions = (results[0]['data'] as List?) ?? [];
-        _trainers = (results[1]['data'] as List?) ?? [];
+        _sessions = sessions;
+        _myBookings = bookings;
+        _bookedSessionIds = bookings
+            .map<int?>((b) => b['session_id'] as int?)
+            .where((id) => id != null)
+            .cast<int>()
+            .toSet();
         _error = null;
       });
     } catch (e) {
@@ -52,7 +59,38 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
     }
   }
 
+  List<dynamic> get _filteredSessions {
+    if (_sessions.isEmpty) return [];
+    final minDate = DateTime(2026, 6, 27);
+    final seenTrainers = <int>{};
+    final query = _searchController.text.toLowerCase();
+
+    return _sessions
+        .where((s) {
+          final start = DateTime.tryParse(s['start_time'] ?? '') ?? DateTime.now();
+          return start.isAfter(minDate) || start.isAtSameMomentAs(minDate);
+        })
+        .toList()
+      ..sort((a, b) {
+        final aTime = DateTime.tryParse(a['start_time'] ?? '') ?? DateTime.now();
+        final bTime = DateTime.tryParse(b['start_time'] ?? '') ?? DateTime.now();
+        return aTime.compareTo(bTime);
+      })
+      ..where((s) {
+        final name = (s['trainer_name'] ?? '').toString().toLowerCase();
+        final title = (s['title'] ?? '').toString().toLowerCase();
+        if (query.isNotEmpty && !name.contains(query) && !title.contains(query)) {
+          return false;
+        }
+        final trainerId = s['trainer_id'] as int?;
+        if (trainerId != null && seenTrainers.contains(trainerId)) return false;
+        if (trainerId != null) seenTrainers.add(trainerId);
+        return true;
+      }).toList();
+  }
+
   Future<void> _bookSession(int sessionId) async {
+    if (_bookedSessionIds.contains(sessionId)) return;
     try {
       final res = await _api.createBooking(sessionId);
       if (res['success'] == true || res['data'] != null) {
@@ -63,6 +101,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
               backgroundColor: Colors.green[700],
             ),
           );
+          await _loadData();
         }
       } else {
         if (mounted) {
@@ -172,37 +211,13 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
       );
     }
 
+    final filtered = _filteredSessions;
+
     return RefreshIndicator(
       onRefresh: () => _loadData(),
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          // Trainer Cards Section
-          if (_trainers.isNotEmpty) ...[
-            Text(
-              'Personal Trainer',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Colors.grey[800],
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 220,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _trainers.length,
-                itemBuilder: (context, index) {
-                  final trainer = _trainers[index];
-                  return _buildTrainerCard(trainer, theme);
-                },
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
-
-          // Sessions Section
           Text(
             'Sesi Tersedia',
             style: TextStyle(
@@ -213,7 +228,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
           ),
           const SizedBox(height: 12),
 
-          if (_sessions.isEmpty)
+          if (filtered.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 32),
               child: Center(
@@ -230,136 +245,12 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
               ),
             )
           else
-            ..._sessions.map((session) => _buildSessionCard(session, theme)),
+            ...filtered.map((session) => _buildSessionCard(session, theme)),
         ],
       ),
     );
   }
 
-  Widget _buildTrainerCard(dynamic trainer, ThemeData theme) {
-    final name = trainer['nama'] ?? 'Trainer';
-    final foto = trainer['foto'] ?? '';
-    final kota = trainer['kota'] ?? '';
-    final baseUrl = ApiService.baseUrl.replaceAll('/api', '');
-
-    // Gradient colors based on trainer index untuk variasi visual
-    final gradients = [
-      [const Color(0xFFE53935), const Color(0xFF1565C0)], // Red to Blue
-      [const Color(0xFF43A047), const Color(0xFF1B5E20)], // Green
-      [const Color(0xFFFF6F00), const Color(0xFFBF360C)], // Orange to Deep Orange
-    ];
-    final gradientIdx = name.hashCode % gradients.length;
-    final gradientColors = gradients[gradientIdx];
-
-    return Container(
-      width: 160,
-      margin: const EdgeInsets.only(right: 12),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 2,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 16),
-            // Photo with gradient fallback
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: foto.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: '$baseUrl/$foto',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      placeholder: (ctx, url) => Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: gradientColors,
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            name[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28,
-                            ),
-                          ),
-                        ),
-                      ),
-                      errorWidget: (ctx, url, err) => Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: gradientColors,
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            name[0].toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 28,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  : Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: gradientColors,
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          name[0].toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 28,
-                          ),
-                        ),
-                      ),
-                    ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              name,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            if (kota.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  kota,
-                  style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildSessionCard(dynamic session, ThemeData theme) {
     final title = session['title'] ?? 'Sesi Latihan';
@@ -368,8 +259,9 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
         ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(session['start_time']))
         : '--';
     final trainerName = session['trainer_name'] ?? 'Trainer';
-    final trainerPhoto = session['trainer_photo'] ?? session['foto'] ?? '';
-    final sessionId = session['id'] ?? 0;
+    final trainerPhoto = session['trainer_photo'] ?? '';
+    final sessionId = session['id'] as int? ?? 0;
+    final isBooked = _bookedSessionIds.contains(sessionId);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -387,7 +279,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
                   borderRadius: BorderRadius.circular(12),
                   child: trainerPhoto.isNotEmpty
                       ? CachedNetworkImage(
-                          imageUrl: '${ApiService.baseUrl.replaceAll('/api', '')}/$trainerPhoto',
+                          imageUrl: '${ApiService.photoBaseUrl}/$trainerPhoto',
                           width: 56,
                           height: 56,
                           fit: BoxFit.cover,
@@ -399,7 +291,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
                             width: 56,
                             height: 56,
                             color: theme.colorScheme.primary.withAlpha(30),
-                            child: Center(child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 20))),
+                            child: Center(child: Text(trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 20))),
                           ),
                         )
                       : Container(
@@ -409,7 +301,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
                             color: theme.colorScheme.primary.withAlpha(30),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Center(child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 20))),
+                          child: Center(child: Text(trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 20))),
                         ),
                 ),
                 const SizedBox(width: 12),
@@ -464,15 +356,19 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => _bookSession(sessionId),
+                onPressed: isBooked ? null : () => _bookSession(sessionId),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: isBooked
+                      ? Colors.green[100]
+                      : theme.colorScheme.primary,
+                  foregroundColor: isBooked ? Colors.green[700] : Colors.white,
+                  disabledBackgroundColor: Colors.green[100],
+                  disabledForegroundColor: Colors.green[700],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Ambil Sesi'),
+                child: Text(isBooked ? 'Booked ✓' : 'Ambil Sesi'),
               ),
             ),
           ],

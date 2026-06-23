@@ -13,18 +13,18 @@
         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
         :class="isActive(item.path) ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'"
       >
-        <span>{{ item.icon }}</span>
+        <component :is="item.icon" class="w-5 h-5" />
         <span>{{ item.label }}</span>
       </router-link>
     </nav>
 
     <div class="p-5 border-t border-white/5 space-y-2">
       <router-link to="/dashboard" class="flex items-center gap-2 px-4 py-2 text-xs text-gray-500 hover:text-white transition-colors">
-        <span>←</span> Kembali ke User
+        <ArrowLeftIcon class="w-4 h-4" /> Kembali ke User
       </router-link>
       <button @click="handleLogout"
-        class="flex w-full items-center justify-center gap-2 px-4 py-3 border border-white/10 rounded-xl text-sm hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 transition-all cursor-pointer">
-        <span>🚪</span> Keluar
+        class="flex w-full items-center gap-3 px-4 py-3 border border-white/10 rounded-xl text-sm hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 transition-all cursor-pointer">
+        <LogOutIcon class="w-5 h-5" /> Keluar
       </button>
     </div>
   </aside>
@@ -32,21 +32,35 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
+import {
+  LayoutDashboardIcon,
+  UsersIcon,
+  UserCogIcon,
+  CalendarCheckIcon,
+  WalletIcon,
+  FileTextIcon,
+  TagIcon,
+  HelpCircleIcon,
+  ImageIcon,
+  BellIcon,
+  ArrowLeftIcon,
+  LogOutIcon
+} from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
 
 const navItems = [
-  { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-  { path: '/admin/users', label: 'User', icon: '👥' },
-  { path: '/admin/trainers', label: 'Trainer', icon: '💪' },
-  { path: '/admin/bookings', label: 'Booking', icon: '📋' },
-  { path: '/admin/payments', label: 'Pembayaran', icon: '💰' },
-  { path: '/admin/articles', label: 'Artikel', icon: '📝' },
-  { path: '/admin/promo', label: 'Promo', icon: '🏷️' },
-  { path: '/admin/faq', label: 'FAQ', icon: '❓' },
-  { path: '/admin/banners', label: 'Banner', icon: '🖼️' },
-  { path: '/admin/notifications', label: 'Notifikasi', icon: '🔔' },
+  { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboardIcon },
+  { path: '/admin/users', label: 'User', icon: UsersIcon },
+  { path: '/admin/trainers', label: 'Trainer', icon: UserCogIcon },
+  { path: '/admin/bookings', label: 'Booking', icon: CalendarCheckIcon },
+  { path: '/admin/payments', label: 'Pembayaran', icon: WalletIcon },
+  { path: '/admin/articles', label: 'Artikel', icon: FileTextIcon },
+  { path: '/admin/promo', label: 'Promo', icon: TagIcon },
+  { path: '/admin/faq', label: 'FAQ', icon: HelpCircleIcon },
+  { path: '/admin/banners', label: 'Banner', icon: ImageIcon },
+  { path: '/admin/notifications', label: 'Notifikasi', icon: BellIcon },
 ]
 
 const isActive = (path) => route.path.startsWith(path)

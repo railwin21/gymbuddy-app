@@ -88,7 +88,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
       return;
     }
     
-    final payBookingId = booking['booking_id'] ?? bookingId;
+    final payBookingId = booking['id'] ?? bookingId;
     final title = Uri.encodeComponent(booking['session_title'] ?? 'Sesi Latihan');
     final amount = double.tryParse((booking['payment_amount'] ?? 0).toString()) ?? 0;
     
@@ -259,15 +259,15 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
 
   Widget _buildBookingCard(dynamic booking, ThemeData theme, {required bool isActive}) {
     final title = booking['session_title'] ?? 'Sesi Latihan';
-    final startTime = booking['start_time'] != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(booking['start_time']))
+    final startTime = booking['session_start_time'] != null
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(booking['session_start_time']))
         : '--';
     final trainerName = booking['trainer_name'] ?? 'Trainer';
     final trainerPhoto = booking['trainer_photo'] ?? '';
     final status = booking['status'] ?? '';
     final paymentStatus = booking['payment_status'] ?? '';
     final paymentAmount = booking['payment_amount'] ?? 0;
-    final bookingId = booking['booking_id'] ?? 0;
+    final bookingId = booking['id'] ?? 0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -300,7 +300,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                   borderRadius: BorderRadius.circular(6),
                   child: trainerPhoto.isNotEmpty
                       ? CachedNetworkImage(
-                          imageUrl: '${ApiService.baseUrl.replaceAll('/api', '')}/$trainerPhoto',
+                          imageUrl: '${ApiService.photoBaseUrl}/$trainerPhoto',
                           width: 22,
                           height: 22,
                           fit: BoxFit.cover,
@@ -310,7 +310,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                             height: 22,
                             color: theme.colorScheme.primary.withAlpha(25),
                             child: Center(
-                              child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
+                              child: Text(trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
                             ),
                           ),
                         )
@@ -322,7 +322,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Center(
-                            child: Text(trainerName[0].toUpperCase(), style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
+                            child: Text(trainerName.isNotEmpty ? trainerName[0].toUpperCase() : 'T', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 11)),
                           ),
                         ),
                 ),

@@ -154,7 +154,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
   }
 
   Widget _trainerPhotoRow(String trainerPhoto, String trainerName) {
-    final baseUrl = ApiService.baseUrl.replaceAll('/api', '');
+    final baseUrl = ApiService.photoBaseUrl;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
