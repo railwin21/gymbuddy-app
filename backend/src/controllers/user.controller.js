@@ -86,7 +86,7 @@ export const getUserByEmail = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { nama, email, propinsi, kota } = req.body;
+        const { nama, email, propinsi, kota, foto } = req.body;
         const loggedInUser = req.user;
 
         if (loggedInUser.role !== 'admin' && loggedInUser.id !== parseInt(id)) {
@@ -98,12 +98,13 @@ export const updateUser = async (req, res) => {
         if (!existing) return res.status(404).json({ message: 'User tidak ditemukan' });
 
         await db.query(
-            'UPDATE user SET nama = ?, email = ?, propinsi = ?, kota = ? WHERE id = ?',
-            [nama || existing.nama, email || existing.email, propinsi || existing.propinsi, kota || existing.kota, id]
+            'UPDATE user SET nama = ?, email = ?, propinsi = ?, kota = ?, foto = ? WHERE id = ?',
+            [nama || existing.nama, email || existing.email, propinsi || existing.propinsi, kota || existing.kota, foto ?? existing.foto, id]
         );
 
         cache.del(`user_${id}`);
         cache.del('all_users');
+        cache.del('all_trainers');
         res.json({ message: 'Profil berhasil diperbarui' });
     } catch (error) {
         res.status(500).json({ message: 'Gagal memperbarui user' });
