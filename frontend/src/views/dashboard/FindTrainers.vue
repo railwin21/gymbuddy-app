@@ -90,8 +90,7 @@
 import { ref, onMounted, computed } from 'vue'
 import api from '../../utils/api'
 
-// Base URL for photos (strip /api suffix)
-const photoBaseUrl = api.defaults.baseURL.replace(/\/api$/, '')
+const photoBaseUrl = api.defaults.baseURL.replace(/\/api\/v1$/, '')
 
 const sessions = ref([])
 const loading = ref(true)
@@ -117,7 +116,7 @@ const fetchData = async () => {
 const filteredSessions = computed(() => {
   if (!sessions.value.length) return []
   return sessions.value.filter(s => {
-    const name = (s.trainer_name || '').toLowerCase()
+    const name = (s.trainer_nama || s.trainer_name || '').toLowerCase()
     const title = (s.title || '').toLowerCase()
     const query = searchQuery.value.toLowerCase()
     return name.includes(query) || title.includes(query)

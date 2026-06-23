@@ -126,11 +126,11 @@ const handleSubmit = async () => {
   try {
     const payload = {
       title: form.value.title,
-      deskripsi: form.value.deskripsi || '',
-      trainer_id: Number(userData.id),
-      start_time: form.value.start_time ? form.value.start_time.replace('T', ' ') + ':00' : null,
-      end_time: form.value.end_time ? form.value.end_time.replace('T', ' ') + ':00' : null,
-      price: Number(form.value.price) || 0
+      description: form.value.deskripsi || '',
+      start_time: form.value.start_time ? new Date(form.value.start_time).toISOString() : null,
+      end_time: form.value.end_time ? new Date(form.value.end_time).toISOString() : null,
+      price: Number(form.value.price) || 0,
+      max_participants: 5
     }
 
     if (isEdit.value) {
@@ -141,7 +141,7 @@ const handleSubmit = async () => {
     showModal.value = false
     await fetchData()
   } catch (err) {
-    alert("Gagal: " + (err.response?.data?.message || "Cek koneksi"))
+    alert("Gagal: " + (err.response?.data?.error?.message || err.response?.data?.message || "Cek koneksi"))
   } finally {
     loadingSubmit.value = false
   }
@@ -163,7 +163,7 @@ const openEditModal = (session) => {
   currentId.value = session.id
   form.value = {
     title: session.title || '',
-    deskripsi: session.deskripsi || '',
+    deskripsi: session.description || session.deskripsi || '',
     start_time: session.start_time ? new Date(session.start_time).toISOString().slice(0, 16) : '',
     end_time: session.end_time ? new Date(session.end_time).toISOString().slice(0, 16) : '',
     price: session.price || 0

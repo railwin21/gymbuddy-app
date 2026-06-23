@@ -153,21 +153,21 @@ const formatDate = (dateStr) => {
   })
 }
 
-const openSendForm = () => {
-  sendForm.value = { user_id: null, title: '', message: '', type: 'system' }
-  showSendForm.value = true
-}
-
-const handleSend = async () => {
-  sending.value = true
+const markAsRead = async (id) => {
   try {
-    await api.post('/notifications/send', sendForm.value)
-    showSendForm.value = false
+    await api.patch(`/notifications/${id}/read`)
     fetchData()
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal mengirim notifikasi')
-  } finally {
-    sending.value = false
+    alert(err.response?.data?.error?.message || 'Gagal menandai notifikasi')
+  }
+}
+
+const markAllAsRead = async () => {
+  try {
+    await api.patch('/notifications/read-all')
+    fetchData()
+  } catch (err) {
+    alert(err.response?.data?.error?.message || 'Gagal')
   }
 }
 
@@ -177,7 +177,7 @@ const deleteNotification = async (id) => {
     await api.delete(`/notifications/${id}`)
     notifications.value = notifications.value.filter(n => n.id !== id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal menghapus')
+    alert(err.response?.data?.error?.message || 'Gagal menghapus')
   }
 }
 

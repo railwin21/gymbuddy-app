@@ -151,16 +151,16 @@ const showToast = (message, type = 'success') => {
 const activeBookings = computed(() => {
   if (!Array.isArray(bookings.value)) return []
   return bookings.value.filter(b => 
-    b.status === 'Confirmed' || b.status === 'Pending'
+    b.status === 'confirmed' || b.status === 'pending'
   )
 })
 
 const upcomingBookings = computed(() => {
-  return activeBookings.value.filter(b => b.status === 'Confirmed')
+  return activeBookings.value.filter(b => b.status === 'confirmed')
 })
 
 const pendingPayment = computed(() => {
-  return activeBookings.value.filter(b => b.payment_status === 'pending' || (b.status === 'Pending' && !b.payment_status))
+  return activeBookings.value.filter(b => b.payment_status === 'pending' || (b.status === 'pending' && !b.payment_status))
 })
 
 const paidBookings = computed(() => {
@@ -169,7 +169,7 @@ const paidBookings = computed(() => {
 
 const pastBookings = computed(() => {
   if (!Array.isArray(bookings.value)) return []
-  return bookings.value.filter(b => b.status === 'Cancel' || b.status === 'Completed')
+  return bookings.value.filter(b => b.status === 'cancelled' || b.status === 'completed')
 })
 
 const fetchMyBookings = async () => {
@@ -245,7 +245,7 @@ const handleCancel = async (bookingId) => {
   if (!confirm('Yakin ingin membatalkan booking ini?')) return
   isCancelling.value = bookingId
   try {
-    await api.patch(`/bookings/${bookingId}/status`, { status: 'Cancel' })
+    await api.patch(`/bookings/${bookingId}/status`, { status: 'cancelled' })
     showToast('Booking berhasil dibatalkan')
     await fetchMyBookings()
   } catch (err) {

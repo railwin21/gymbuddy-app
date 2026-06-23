@@ -108,7 +108,7 @@ const progressForm = ref({ activity: '', duration: 30, note: '' })
 const filteredBookers = computed(() => {
   if (!searchQuery.value) return bookers.value
   return bookers.value.filter(b => 
-    (b.customer_name || '').toLowerCase().includes(searchQuery.value.toLowerCase())
+    (b.member_nama || b.customer_name || '').toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
@@ -116,15 +116,15 @@ const getInitials = (n) => n ? n.split(' ').map(i => i[0]).join('').toUpperCase(
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : '--'
 
 const getStatusClass = (status) => {
-  if (status === 'Pending') return 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20'
-  if (status === 'Cancel') return 'bg-red-400/10 text-red-400 border-red-400/20'
-  return 'bg-red-500/10 text-red-500 border-red-500/20'
+  if (status === 'pending') return 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20'
+  if (status === 'cancelled') return 'bg-red-400/10 text-red-400 border-red-400/20'
+  return 'bg-green-500/10 text-green-500 border-green-500/20'
 }
 
 const fetchBookers = async () => {
   loading.value = true
   try {
-    const res = await api.get('/views/customer-booking-history')
+    const res = await api.get('/bookings/my')
     const rawData = res.data?.data || []
     bookers.value = Array.isArray(rawData) ? rawData : []
   } catch (err) {

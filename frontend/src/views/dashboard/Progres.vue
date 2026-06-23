@@ -144,8 +144,7 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { day: 'nu
 const fetchProgress = async () => {
   loading.value = true
   try {
-    // Gunakan endpoint /my untuk mengambil progress milik user yang login
-    const res = await api.get('/progress/my')
+    const res = await api.get('/progress')
     let data = res.data?.data || []
     workouts.value = Array.isArray(data) ? data : []
   } catch (err) {

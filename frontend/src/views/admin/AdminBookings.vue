@@ -87,7 +87,7 @@ const fetchData = async () => {
 }
 
 const statusBadge = (s) => {
-  const map = { Pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', Confirmed: 'bg-green-500/10 text-green-500 border-green-500/20', Cancel: 'bg-red-500/10 text-red-500 border-red-500/20' }
+  const map = { pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20', confirmed: 'bg-green-500/10 text-green-500 border-green-500/20', cancelled: 'bg-red-500/10 text-red-500 border-red-500/20' }
   return map[s] || ''
 }
 

@@ -173,7 +173,7 @@ const handleRegister = async () => {
     showToast('Pendaftaran Berhasil! Silakan Login.', 'success')
     setTimeout(() => router.push('/login'), 1500)
   } catch (error) {
-    const msg = error.response?.data?.message || 'Gagal mendaftar. Periksa koneksi.'
+    const msg = error.response?.data?.error?.message || error.response?.data?.message || 'Gagal mendaftar. Periksa koneksi.'
     showToast(msg, 'error')
   } finally {
     loading.value = false

@@ -1,11 +1,12 @@
 {
-  "name": "nodejs-app",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "gymbuddy-api",
+  "version": "2.0.0",
+  "description": "GymBuddy backend API with Drizzle ORM and PostgreSQL",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "tsc",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/db/seed.ts",

@@ -66,27 +66,35 @@ const bookingStatus = ref([])
 
 const fetchStats = async () => {
   try {
-    const [userRes, bookingRes, bookingDetails] = await Promise.all([
-      api.get('/analytics/users'),
-      api.get('/analytics/bookings'),
-      api.get('/bookings').catch(() => ({ data: { data: [] } }))
+    const [usersRes, bookingsRes] = await Promise.all([
+      api.get('/users', { params: { limit: 999 } }),
+      api.get('/bookings', { params: { limit: 999 } })
     ])
 
-    const userData = userRes.data?.data || {}
-    roleDistribution.value = userData.roleDistribution || []
+    const allUsers = usersRes.data?.data || []
+    const allBookings = bookingsRes.data?.data || []
 
-    const trainerCount = (userData.roleDistribution || []).find(r => r.role === 'trainer')?.count || 0
-    const bookingData = bookingRes.data?.data || {}
-    bookingStatus.value = bookingData.statusDistribution || []
+    // Compute role distribution
+    const roles = ['admin', 'trainer', 'customer']
+    roleDistribution.value = roles.map(role => ({
+      role,
+      count: allUsers.filter(u => u.role === role).length
+    }))
 
-    // Hitung pembayaran lunas dari booking
-    const allBookings = bookingDetails.data?.data || []
+    // Compute booking status distribution
+    const statuses = ['pending', 'confirmed', 'cancelled']
+    bookingStatus.value = statuses.map(status => ({
+      status,
+      count: allBookings.filter(b => b.status === status).length
+    }))
+
+    const trainerCount = allUsers.filter(u => u.role === 'trainer').length
     const settledPayments = allBookings.filter(b => b.payment_status === 'settlement').length
 
     stats.value = {
-      totalUsers: userData.totalUsers || 0,
+      totalUsers: allUsers.length,
       trainers: trainerCount,
-      totalBookings: bookingData.totalBookings || 0,
+      totalBookings: allBookings.length,
       settledPayments
     }
   } catch (err) {

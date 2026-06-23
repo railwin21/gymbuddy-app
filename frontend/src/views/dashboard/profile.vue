@@ -66,7 +66,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import api from '../../utils/api'
+import { useAuthStore } from '../../stores/authStore'
 
+const authStore = useAuthStore()
 const user = ref({ id: '', nama: '', email: '', role: '', kota: '', propinsi: '', foto: '' })
 const photoUrl = ref('')
 const uploading = ref(false)
@@ -86,15 +88,20 @@ const infoFields = computed(() => ({
   "Account Role": user.value.role
 }))
 
-const photoBaseUrl = api.defaults.baseURL.replace(/\/api$/, '')
+const photoBaseUrl = api.defaults.baseURL.replace(/\/api\/v1$/, '')
+
+const syncUser = (data) => {
+  user.value = data
+  if (data.foto) {
+    photoUrl.value = `${photoBaseUrl}/${data.foto}`
+  }
+}
 
 const fetchUserProfile = async () => {
   try {
-    const response = await api.get('/auth/me')
-    const data = response.data
-    user.value = data
-    if (data.foto) {
-      photoUrl.value = `${photoBaseUrl}/${data.foto}`
+    await authStore.init()
+    if (authStore.user) {
+      syncUser(authStore.user)
     }
   } catch (error) {
     console.error("Gagal ambil data:", error)
@@ -139,6 +146,10 @@ const handleFileSelect = async (e) => {
     if (fotoPath) {
       photoUrl.value = `${photoBaseUrl}/${fotoPath}`
       user.value.foto = fotoPath
+      // Sync ke authStore agar semua view (termasuk profile page) pakai foto baru
+      if (authStore.user) {
+        authStore.setUser({ ...authStore.user, foto: fotoPath })
+      }
       showToast('Foto profil berhasil diperbarui!', 'success')
     }
   } catch (err) {

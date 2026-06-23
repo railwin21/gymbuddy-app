@@ -82,21 +82,21 @@ const roleBadge = (role) => {
 
 const fetchData = async () => {
   try {
-    const params = { _page: page.value, _limit: limit }
-    if (search.value) params.nama = search.value
+    const params = { page: page.value, limit }
+    if (search.value) params.search = search.value
     if (roleFilter.value) params.role = roleFilter.value
-    const res = await api.get('/user', { params })
+    const res = await api.get('/users', { params })
     users.value = res.data?.data || []
-    total.value = parseInt(res.headers['x-total-count']) || 0
+    total.value = res.data?.meta?.total || users.value.length
   } catch (err) { console.error(err) }
 }
 
 const deleteUser = async (id) => {
   if (!confirm('Yakin ingin menghapus user ini?')) return
   try {
-    await api.delete(`/user/${id}`)
+    await api.delete(`/users/${id}`)
     fetchData()
-  } catch (err) { alert(err.response?.data?.message || 'Gagal') }
+  } catch (err) { alert(err.response?.data?.error?.message || err.response?.data?.message || 'Gagal') }
 }
 
 import { computed } from 'vue'

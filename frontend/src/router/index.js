@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+
 import Home from '../views/home.vue'
 import About from '../views/about.vue'
 import Trainer from '../views/trainer.vue'
@@ -70,27 +71,25 @@ const router = createRouter({
 })
 
 // Navigation Guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const token = localStorage.getItem('token')
   const user = JSON.parse(localStorage.getItem('user') || '{}')
 
   // Protected dashboard/trainer routes
   if ((to.path.startsWith('/dashboard') || to.path.startsWith('/trainer-panel')) && !token) {
-    return next('/login')
+    return { path: '/login' }
   }
 
   // Admin routes - check role
   if (to.meta.requiresAdmin) {
-    if (!token) return next('/login')
-    if (user.role !== 'admin') return next('/dashboard')
+    if (!token) return { path: '/login' }
+    if (user.role !== 'admin') return { path: '/dashboard' }
   }
 
   // Redirect logged-in users away from login/register
   if ((to.path === '/login' || to.path === '/register') && token) {
-    return next('/dashboard')
+    return { path: '/dashboard' }
   }
-
-  next()
 })
 
 export default router

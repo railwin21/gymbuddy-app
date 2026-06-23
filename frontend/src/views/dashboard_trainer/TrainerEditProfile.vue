@@ -78,7 +78,9 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import api from '../../utils/api'
+import { useAuthStore } from '../../stores/authStore'
 
+const authStore = useAuthStore()
 const user = ref({ id: '', nama: '', email: '', role: '', kota: '', propinsi: '' })
 const showModal = ref(false)
 const editForm = ref({ nama: '', propinsi: '', kota: '', email: '' })
@@ -93,8 +95,8 @@ const infoFields = computed(() => ({
 
 const fetchUserProfile = async () => {
   try {
-    const { data } = await api.get('/auth/me')
-    if (data) { user.value = data }
+    await authStore.init()
+    if (authStore.user) { user.value = authStore.user }
   } catch (error) { console.error("Gagal load profil:", error) }
 }
 
@@ -111,7 +113,7 @@ const openEditModal = () => {
 
 const handleUpdate = async () => {
   try {
-    await api.put(`/user/${user.value.id}`, {
+    await api.put('/users/profile', {
       nama: editForm.value.nama,
       email: editForm.value.email,
       propinsi: editForm.value.propinsi,

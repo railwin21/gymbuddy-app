@@ -91,9 +91,8 @@ const handleLogin = async () => {
       password: password.value
     })
 
-    localStorage.setItem('token', response.data.token)
-    
-    const user = response.data.user
+    const { token, user } = response.data.data
+    localStorage.setItem('token', token)
     authStore.setUser(user)
     
     showToast('Login Berhasil!')
@@ -109,7 +108,7 @@ const handleLogin = async () => {
     }, 500)
 
   } catch (error) {
-    errorMsg.value = error.response?.data?.message || 'Gagal terhubung ke server'
+    errorMsg.value = error.response?.data?.error?.message || error.response?.data?.message || 'Gagal terhubung ke server'
     showToast(errorMsg.value, 'error')
   } finally {
     loading.value = false
