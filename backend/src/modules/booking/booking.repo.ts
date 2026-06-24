@@ -1,4 +1,4 @@
-import { eq, and, sql, desc } from 'drizzle-orm';
+import { eq, and, sql, desc, ne } from 'drizzle-orm';
 import { db } from '../../db/client';
 import { bookings, sessions, users } from '../../db/schema';
 
@@ -125,7 +125,11 @@ export async function findBySessionTrainer(trainerId: number) {
 export async function checkExistingBooking(sessionId: number, memberId: number) {
     const rows = await db.select({ id: bookings.id })
     .from(bookings)
-    .where(and(eq(bookings.session_id, sessionId), eq(bookings.member_id, memberId)))
+    .where(and(
+        eq(bookings.session_id, sessionId),
+        eq(bookings.member_id, memberId),
+        ne(bookings.status, 'cancelled')
+    ))
     .limit(1);
     return rows.length > 0;
 }

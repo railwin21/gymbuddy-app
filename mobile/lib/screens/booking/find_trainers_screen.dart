@@ -46,6 +46,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
         _sessions = sessions;
         _myBookings = bookings;
         _bookedSessionIds = bookings
+            .where((b) => b['status'] != 'cancelled')
             .map<int?>((b) => b['session_id'] as int?)
             .where((id) => id != null)
             .cast<int>()
