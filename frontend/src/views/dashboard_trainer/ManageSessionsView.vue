@@ -29,10 +29,10 @@
 
         <div class="space-y-2 mb-8">
           <div class="flex items-center text-[10px] text-gray-400 gap-2">
-            <CalendarIcon class="w-3 h-3 text-red-500 opacity-50" /> {{ formatDate(session.start_time) }}
+            <CalendarIcon class="w-3 h-3 text-red-500 opacity-50" /> {{ formatDateTime(session.start_time) }}
           </div>
           <div class="flex items-center text-[10px] text-gray-400 gap-2">
-            <ClockIcon class="w-3 h-3 text-red-500 opacity-50" /> {{ formatTime(session.start_time) }} - {{ formatTime(session.end_time) }}
+            <ClockIcon class="w-3 h-3 text-red-500 opacity-50" /> {{ formatDuration(session.start_time, session.end_time) }}
           </div>
           <div class="flex items-center text-[10px] text-gray-400 gap-2">
             <ActivityIcon class="w-3 h-3 text-red-500 opacity-50" /> Status: {{ session.status }}
@@ -211,8 +211,23 @@ const openCreateModal = () => {
 }
 
 const formatRupiah = (price) => price ? `Rp${Number(price).toLocaleString('id-ID')}` : 'Rp0'
-const formatTime = (d) => d ? new Date(d).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : '--'
-const formatDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', {day:'numeric', month:'short'}) : '--'
+
+// Format waktu lokal (konsisten dengan mobile)
+const formatDateTime = (d) => {
+  if (!d) return '--'
+  return new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long', day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  }).format(new Date(d))
+}
+
+const formatDuration = (start, end) => {
+  if (!start || !end) return '--'
+  const s = new Date(start).getTime()
+  const e = new Date(end).getTime()
+  const mins = Math.round((e - s) / 60000)
+  return mins > 0 ? `${mins} menit` : '--'
+}
 
 onMounted(fetchData)
 </script>

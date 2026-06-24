@@ -87,7 +87,16 @@ export async function updateBookingStatus(
         throw new BookingError(404, 'NOT_FOUND', 'Booking tidak ditemukan');
     }
 
-    if (userRole !== 'admin' && booking.session_trainer_id !== userId) {
+    // Customers can only cancel their own bookings
+    if (userRole === 'customer') {
+        if (booking.member_id !== userId) {
+            throw new BookingError(403, 'FORBIDDEN', 'Anda tidak memiliki izin untuk mengubah booking ini');
+        }
+        if (status !== 'cancelled') {
+            throw new BookingError(403, 'FORBIDDEN', 'Customer hanya dapat membatalkan booking');
+        }
+    } else if (userRole !== 'admin' && booking.session_trainer_id !== userId) {
+        // Trainers can only update bookings for their own sessions
         throw new BookingError(403, 'FORBIDDEN', 'Anda tidak memiliki izin untuk mengubah status booking ini');
     }
 

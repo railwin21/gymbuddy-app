@@ -26,6 +26,6 @@ router.delete('/my', authMiddleware, requireRole('customer', 'admin'), resetMyBo
 router.delete('/all', authMiddleware, requireRole('admin'), resetAllBookingsController);
 router.get('/:id', authMiddleware, validate(idParamSchema), getBookingByIdController);
 router.post('/', authMiddleware, requireRole('customer', 'admin'), validate(createBookingSchema), createBookingController);
-router.patch('/:id/status', authMiddleware, requireRole('trainer', 'admin'), validate(idParamSchema), validate(updateBookingStatusSchema), updateBookingStatusController);
+router.patch('/:id/status', authMiddleware, requireRole('customer', 'trainer', 'admin'), validate(idParamSchema), validate(updateBookingStatusSchema), updateBookingStatusController);
 
 export default router;

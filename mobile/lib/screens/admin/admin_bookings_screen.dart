@@ -80,7 +80,7 @@ class _AdminBookingsScreenState extends ConsumerState<AdminBookingsScreen> {
                       itemBuilder: (ctx, i) {
                         final b = _bookings[i];
                         final date = b['createdAt'] != null
-                          ? DateFormat('dd/MM/yy HH:mm').format(DateTime.parse(b['createdAt']))
+                          ? DateFormat('dd/MM/yy HH:mm').format(DateTime.parse(b['createdAt']).toLocal())
                           : '';
                         return Card(
                           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),

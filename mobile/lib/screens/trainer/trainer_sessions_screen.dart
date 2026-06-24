@@ -93,8 +93,8 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
     final descController = TextEditingController(text: isEdit ? session['description'] : '');
     final priceController = TextEditingController(text: isEdit ? (session['price'] ?? 0).toString() : '150000');
     
-    DateTime? startTime = isEdit && session['start_time'] != null ? DateTime.parse(session['start_time']) : null;
-    DateTime? endTime = isEdit && session['end_time'] != null ? DateTime.parse(session['end_time']) : null;
+    DateTime? startTime = isEdit && session['start_time'] != null ? DateTime.parse(session['start_time']).toLocal() : null;
+    DateTime? endTime = isEdit && session['end_time'] != null ? DateTime.parse(session['end_time']).toLocal() : null;
 
     final formKey = GlobalKey<FormState>();
 
@@ -347,10 +347,10 @@ class _TrainerSessionsScreenState extends ConsumerState<TrainerSessionsScreen> {
     final price = session['price'] ?? 0;
     final status = session['status'] ?? 'scheduled';
     final startTime = session['start_time'] != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(session['start_time']))
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(session['start_time']).toLocal())
         : '--';
     final endTime = session['end_time'] != null
-        ? DateFormat('HH:mm').format(DateTime.parse(session['end_time']))
+        ? DateFormat('HH:mm').format(DateTime.parse(session['end_time']).toLocal())
         : '--';
     final bookings = session['total_bookings'] ?? session['totalBookings'] ?? 0;
 

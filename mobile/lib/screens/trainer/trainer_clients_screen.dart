@@ -148,7 +148,7 @@ class _TrainerClientsScreenState extends ConsumerState<TrainerClientsScreen> {
     final name = client['member_nama'] ?? 'Member';
     final sessionTitle = client['session_title'] ?? 'Sesi';
     final startTime = client['session_start_time'] != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(client['session_start_time']))
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(client['session_start_time']).toLocal())
         : '--';
     final status = client['status'] ?? 'pending';
     final email = client['member_email'] ?? '';

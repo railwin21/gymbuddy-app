@@ -268,9 +268,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ? (item['price'] ?? 0)
         : (item['payment_amount'] ?? 0);
     final startTime = item['start_time'] != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(item['start_time']))
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(item['start_time']).toLocal())
         : (item['session_start_time'] != null
-            ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(item['session_start_time']))
+            ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(item['session_start_time']).toLocal())
             : '--');
     final trainerName = item['trainer_name'] ?? 'Trainer';
     final trainerPhoto = item['trainer_photo'] ?? '';

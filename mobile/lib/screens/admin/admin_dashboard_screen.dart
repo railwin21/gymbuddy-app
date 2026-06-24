@@ -209,7 +209,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     final memberName = booking['member_nama'] ?? 'Member';
     final status = booking['status'] ?? '';
     final date = booking['session_start_time'] != null
-        ? DateFormat('dd MMM').format(DateTime.parse(booking['session_start_time']))
+        ? DateFormat('dd MMM').format(DateTime.parse(booking['session_start_time']).toLocal())
         : '--';
 
     return Card(

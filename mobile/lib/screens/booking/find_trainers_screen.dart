@@ -189,7 +189,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
                         final isBooked = _bookedSessionIds.contains(sid);
                         final st = session['start_time'] != null
                             ? DateFormat('dd MMM yyyy, HH:mm')
-                                .format(DateTime.parse(session['start_time']))
+                                .format(DateTime.parse(session['start_time']).toLocal())
                             : '--';
                         final price = session['price'] ?? 0;
 
@@ -398,7 +398,7 @@ class _FindTrainersScreenState extends ConsumerState<FindTrainersScreen> {
     final title = session['title'] ?? 'Sesi Latihan';
     final price = session['price'] ?? 0;
     final startTime = session['start_time'] != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(session['start_time']))
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(session['start_time']).toLocal())
         : '--';
     final trainerName = session['trainer_name'] ?? 'Trainer';
     final trainerPhoto = session['trainer_photo'] ?? '';

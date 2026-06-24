@@ -260,7 +260,7 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
   Widget _buildBookingCard(dynamic booking, ThemeData theme, {required bool isActive}) {
     final title = booking['session_title'] ?? 'Sesi Latihan';
     final startTime = booking['session_start_time'] != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(booking['session_start_time']))
+        ? DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(booking['session_start_time']).toLocal())
         : '--';
     final trainerName = booking['trainer_name'] ?? 'Trainer';
     final trainerPhoto = booking['trainer_photo'] ?? '';

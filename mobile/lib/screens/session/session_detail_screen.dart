@@ -59,7 +59,7 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
 
   String _formatDate(String? dateStr) {
     if (dateStr == null) return 'TBD';
-    final dt = DateTime.parse(dateStr);
+    final dt = DateTime.parse(dateStr).toLocal();
     return '${DateFormat('EEEE, dd MMM yyyy', 'id').format(dt)}  •  ${DateFormat('HH:mm').format(dt)}';
   }
 
@@ -102,8 +102,6 @@ class _SessionDetailScreenState extends ConsumerState<SessionDetailScreen> {
                           _infoRow(Icons.person, 'Trainer', _session?['trainer_name'] ?? ''),
                           const Divider(),
                           _trainerPhotoRow(_session?['trainer_photo'] ?? '', _session?['trainer_name'] ?? ''),
-                          const Divider(),
-                          _infoRow(Icons.people, 'Max Peserta', '${_session?['max_participants'] ?? 1} orang'),
                           const Divider(),
                           _infoRow(Icons.money, 'Harga', 'Rp${_formatRupiah(_session?['price'] ?? 0)}'),
                         ],
