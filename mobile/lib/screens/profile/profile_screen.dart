@@ -24,6 +24,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isEditing = false;
   bool _loading = true;
   bool _saving = false;
+  Map<String, dynamic>? _profileData;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final res = await _api.getUserProfile();
       final user = res['data'] ?? res['user'];
       if (user != null && mounted) {
+        setState(() => _profileData = user);
         _initForm(user);
       }
     } catch (e) {
@@ -112,7 +114,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final theme = Theme.of(context);
-    final user = auth.user;
+    final user = _profileData ?? auth.user;
 
     return Scaffold(
       appBar: AppBar(          leading: IconButton(
