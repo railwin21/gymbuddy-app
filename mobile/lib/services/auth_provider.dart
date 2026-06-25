@@ -124,10 +124,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final user = res['data']?['user'] ?? res['user'];
 
       if (token == null || res['success'] == false) {
+        final errMsg = res['message'] ?? 'Email atau password salah';
+        final errCode = res['code'] ?? res['error']?['code'];
         state = state.copyWith(
           isLoading: false,
-          error: res['message'] ?? 'Email atau password salah',
+          error: errMsg,
         );
+        // If email not verified, navigate to OTP
+        if (errCode == 'EMAIL_NOT_VERIFIED' && mounted) {
+          state = state.copyWith(error: errMsg);
+        }
         return;
       }
 
@@ -163,18 +169,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> register(Map<String, dynamic> data) async {
+  Future<String?> register(Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _api.register(data);
+      final res = await _api.register(data);
+      if (res['success'] == false) {
+        state = state.copyWith(
+          isLoading: false,
+          error: res['message'] ?? 'Registrasi gagal. Coba lagi.',
+        );
+        return null;
+      }
       state = state.copyWith(isLoading: false, error: null);
-      return true;
+      final email = res['data']?['email'] ?? data['email'] as String?;
+      return email;
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: 'Registrasi gagal. Coba lagi.',
       );
-      return false;
+      return null;
     }
   }
 

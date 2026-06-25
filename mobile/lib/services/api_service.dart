@@ -11,8 +11,8 @@ class ApiService {
   late final Dio _dio;
 
   static const String _prodUrl = 'https://api.gymbuddy.site/api/v1';
-  static const String _devUrl = 'http://localhost:5000/api/v1';
-  static const bool _isProduction = true;
+  static const String _devUrl = 'http://10.0.2.2:5000/api/v1';
+  static const bool _isProduction = false;
 
   static String get baseUrl => _isProduction ? _prodUrl : _devUrl;
   static String get photoBaseUrl => baseUrl.replaceAll('/api/v1', '');
@@ -66,16 +66,22 @@ class ApiService {
     if (e is DioException) {
       final data = e.response?.data;
       String msg;
+      String? code;
+      Map<String, dynamic>? errorObj;
       if (data is Map) {
         msg = data['message']?.toString() ??
             data['error']?['message']?.toString() ??
             'Terjadi kesalahan. Coba lagi.';
+        code = data['error']?['code']?.toString() ?? data['code']?.toString();
+        errorObj = data['error'] is Map<String, dynamic> 
+            ? data['error'] as Map<String, dynamic> 
+            : null;
       } else if (data != null) {
         msg = data.toString();
       } else {
         msg = 'Terjadi kesalahan. Coba lagi.';
       }
-      return {'success': false, 'message': msg};
+      return {'success': false, 'message': msg, if (code != null) 'code': code, if (errorObj != null) 'error': errorObj};
     }
     return {'success': false, 'message': 'Koneksi error. Periksa internet Anda.'};
   }
@@ -103,6 +109,24 @@ class ApiService {
       final role = data.remove('role') ?? 'customer';
       final endpoint = role == 'trainer' ? '/auth/register/trainer' : '/auth/register';
       final res = await _dio.post(endpoint, data: data);
+      return res.data;
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    try {
+      final res = await _dio.post('/auth/verify-otp', data: {'email': email, 'otp': otp});
+      return res.data;
+    } catch (e) {
+      return _handleError(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> resendOtp(String email) async {
+    try {
+      final res = await _dio.post('/auth/resend-otp', data: {'email': email});
       return res.data;
     } catch (e) {
       return _handleError(e);

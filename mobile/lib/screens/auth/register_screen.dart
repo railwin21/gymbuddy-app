@@ -44,16 +44,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       data['spesialisasi'] = _spesialisasiController.text.trim();
     }
 
-    final success = await ref.read(authProvider.notifier).register(data);
+    final email = await ref.read(authProvider.notifier).register(data);
 
-    if (success && mounted) {
+    if (email != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Registrasi berhasil! Silakan login.'),
+          content: const Text('Pendaftaran berhasil! Kode OTP telah dikirim ke email Anda.'),
           backgroundColor: Colors.green[700],
         ),
       );
-      context.go('/login');
+      context.go('/verify-otp?email=$email');
     }
   }
 

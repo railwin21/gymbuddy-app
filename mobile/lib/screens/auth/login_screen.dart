@@ -25,10 +25,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
+    final email = _emailController.text.trim();
     await ref.read(authProvider.notifier).login(
-      _emailController.text.trim(),
+      email,
       _passwordController.text,
     );
+
+    if (!mounted) return;
+    final authState = ref.read(authProvider);
+    if (authState.error != null && authState.error!.contains('belum diverifikasi')) {
+      context.go('/verify-otp?email=$email');
+    }
   }
 
   @override

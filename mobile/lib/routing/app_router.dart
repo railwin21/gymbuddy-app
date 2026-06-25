@@ -7,6 +7,7 @@ import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/auth/forgot_password_screen.dart';
 import '../screens/auth/reset_password_screen.dart';
+import '../screens/auth/verify_otp_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/booking/find_trainers_screen.dart';
 import '../screens/booking/my_bookings_screen.dart';
@@ -42,7 +43,8 @@ GoRouter createRouter(WidgetRef ref) {
       final isAuthRoute = state.matchedLocation == '/login' || 
                           state.matchedLocation == '/register' ||
                           state.matchedLocation == '/forgot-password' ||
-                          state.matchedLocation == '/reset-password';
+                          state.matchedLocation == '/reset-password' ||
+                          state.matchedLocation == '/verify-otp';
       final isAdminRoute = state.matchedLocation.startsWith('/admin');
       final isTrainerRoute = state.matchedLocation.startsWith('/trainer');
 
@@ -65,6 +67,12 @@ GoRouter createRouter(WidgetRef ref) {
       GoRoute(path: '/', builder: (_, _) => const HomeScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
+      GoRoute(
+        path: '/verify-otp',
+        builder: (_, state) => VerifyOtpScreen(
+          email: state.uri.queryParameters['email'] ?? '',
+        ),
+      ),
       GoRoute(path: '/forgot-password', builder: (_, _) => const ForgotPasswordScreen()),
       GoRoute(
         path: '/reset-password',
