@@ -9,7 +9,7 @@
             </svg>
           </div>
           <h2 class="text-3xl font-bold text-white mb-2">Reset Password<span class="text-red-500">.</span></h2>
-          <p class="text-gray-400 text-sm">Masukkan password baru untuk akun Anda.</p>
+          <p class="text-gray-400 text-sm">Masukkan kode OTP dan password baru untuk akun Anda.</p>
         </div>
 
         <div v-if="errorMsg" class="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-4 rounded-2xl mb-6">
@@ -22,6 +22,14 @@
         </div>
 
         <form v-if="!success" @submit.prevent="handleSubmit" class="space-y-6">
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-gray-500 uppercase mb-2 ml-1">Kode OTP (6 Digit)</label>
+            <input v-model="otp" type="text" maxlength="6" inputmode="numeric" required
+                   :class="['w-full bg-[#1F2937] border border-gray-700 text-white text-center text-2xl tracking-[0.5em] px-5 py-4 rounded-2xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all placeholder-gray-600']"
+                   placeholder="000000"
+                   @input="otp = otp.replace(/\D/g, '')">
+          </div>
+
           <div class="space-y-2">
             <label class="block text-xs font-semibold text-gray-500 uppercase mb-2 ml-1">Password Baru</label>
             <input v-model="password" type="password" autocomplete="new-password" required
@@ -40,6 +48,13 @@
                   class="w-full bg-red-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-red-600 shadow-xl shadow-red-500/20 transition-all active:scale-[0.98] disabled:bg-gray-600">
             {{ loading ? 'Memproses...' : 'Ubah Password' }}
           </button>
+
+          <div class="text-center">
+            <button type="button" @click="handleResendOtp" :disabled="resendCooldown > 0 || resending"
+                    class="text-gray-400 text-sm hover:text-red-500 transition-colors disabled:opacity-50">
+              {{ resendCooldown > 0 ? `Kirim ulang OTP (${resendCooldown}s)` : (resending ? 'Mengirim...' : 'Tidak menerima kode? Kirim ulang OTP') }}
+            </button>
+          </div>
         </form>
 
         <div v-if="success" class="mt-6">
@@ -68,35 +83,75 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '../utils/api'
 
 const router = useRouter()
 const route = useRoute()
+const email = ref(route.query.email || '')
+const otp = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const loading = ref(false)
+const resending = ref(false)
 const success = ref(false)
 const errorMsg = ref('')
 const toast = ref({ show: false, message: '', type: 'success' })
+const resendCooldown = ref(0)
+let cooldownTimer = null
 
 const showToast = (message, type = 'success') => {
   toast.value = { show: true, message, type }
   setTimeout(() => { toast.value.show = false }, 3000)
 }
 
+const startCooldown = () => {
+  resendCooldown.value = 60
+  cooldownTimer = setInterval(() => {
+    resendCooldown.value--
+    if (resendCooldown.value <= 0) {
+      clearInterval(cooldownTimer)
+    }
+  }, 1000)
+}
+
 onMounted(() => {
-  if (!route.query.token) {
-    errorMsg.value = 'Token reset password tidak ditemukan. Pastikan Anda membuka link dari email.'
+  if (!email.value) {
+    errorMsg.value = 'Email tidak ditemukan. Silakan ulangi proses lupa password.'
   }
 })
+
+onUnmounted(() => {
+  if (cooldownTimer) clearInterval(cooldownTimer)
+})
+
+const handleResendOtp = async () => {
+  if (resendCooldown.value > 0) return
+  resending.value = true
+  errorMsg.value = ''
+  try {
+    await api.post('/auth/forgot-password', { email: email.value })
+    showToast('Kode OTP baru telah dikirim!', 'success')
+    startCooldown()
+  } catch (err) {
+    errorMsg.value = err.response?.data?.error?.message || err.response?.data?.message || 'Gagal mengirim ulang OTP.'
+    showToast(errorMsg.value, 'error')
+  } finally {
+    resending.value = false
+  }
+}
 
 const handleSubmit = async () => {
   errorMsg.value = ''
 
-  if (!route.query.token) {
-    errorMsg.value = 'Token tidak ditemukan. Buka link dari email Anda.'
+  if (!email.value) {
+    errorMsg.value = 'Email tidak ditemukan. Silakan ulangi proses lupa password.'
+    return
+  }
+
+  if (otp.value.length !== 6) {
+    errorMsg.value = 'Kode OTP harus 6 digit'
     return
   }
 
@@ -113,13 +168,14 @@ const handleSubmit = async () => {
   loading.value = true
   try {
     await api.post('/auth/reset-password', {
-      token: route.query.token,
+      email: email.value,
+      otp: otp.value,
       password: password.value,
     })
     success.value = true
     showToast('Password berhasil diubah!', 'success')
   } catch (err) {
-    errorMsg.value = err.response?.data?.error?.message || err.response?.data?.message || 'Gagal mereset password. Token mungkin sudah kedaluwarsa.'
+    errorMsg.value = err.response?.data?.error?.message || err.response?.data?.message || 'Gagal mereset password. Kode OTP mungkin salah atau sudah kedaluwarsa.'
     showToast(errorMsg.value, 'error')
   } finally {
     loading.value = false

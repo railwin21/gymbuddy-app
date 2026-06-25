@@ -123,17 +123,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final token = res['data']?['token'] ?? res['token'];
       final user = res['data']?['user'] ?? res['user'];
 
-      if (token != null) {
-        // Set token di cache ApiService IMMEDIATELY (synchronous)
-        ApiService.setToken(token);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', token);
+      if (token == null || res['success'] == false) {
+        state = state.copyWith(
+          isLoading: false,
+          error: res['message'] ?? 'Email atau password salah',
+        );
+        return;
       }
+
+      // Set token di cache ApiService IMMEDIATELY (synchronous)
+      ApiService.setToken(token);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
 
       // Block trainer/admin dari login di mobile (mobile khusus customer)
       if (user != null && user['role'] != 'customer') {
         ApiService.setToken(null);
-        final prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
         state = state.copyWith(
           isLoading: false,
@@ -174,11 +179,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> _logout() async {
-    // Clear cached token di ApiService (synchronous, langsung生效)
     ApiService.setToken(null);
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
-    state = const AuthState();
+    state = const AuthState(isInitialized: true);
   }
 
   Future<void> logout() => _logout();

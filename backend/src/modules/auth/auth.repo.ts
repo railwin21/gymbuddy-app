@@ -48,3 +48,11 @@ export async function updatePassword(userId: number, hashedPassword: string) {
         .returning({ id: users.id });
     return rows.length > 0;
 }
+
+export async function updateUserVerified(userId: number) {
+    const rows = await db.update(users)
+        .set({ is_verified: true, updatedAt: new Date() })
+        .where(eq(users.id, userId))
+        .returning({ id: users.id });
+    return rows.length > 0;
+}

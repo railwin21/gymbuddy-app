@@ -9,6 +9,8 @@ import {
     loginSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
+    verifyOtpSchema,
+    resendOtpSchema,
 } from './auth.schema';
 import {
     registerCustomerController,
@@ -18,6 +20,8 @@ import {
     getMeController,
     forgotPasswordController,
     resetPasswordController,
+    verifyOtpController,
+    resendOtpController,
 } from './auth.controller';
 
 const router = Router();
@@ -28,6 +32,8 @@ router.post('/register/admin', authMiddleware, requireRole('admin'), validate(re
 router.post('/login', validate(loginSchema), loginController);
 router.post('/forgot-password', validate(forgotPasswordSchema), forgotPasswordController);
 router.post('/reset-password', validate(resetPasswordSchema), resetPasswordController);
+router.post('/verify-otp', validate(verifyOtpSchema), verifyOtpController);
+router.post('/resend-otp', validate(resendOtpSchema), resendOtpController);
 router.get('/me', authMiddleware, getMeController);
 
 export default router;

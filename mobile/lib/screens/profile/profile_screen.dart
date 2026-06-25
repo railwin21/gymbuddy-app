@@ -7,7 +7,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/auth_provider.dart';
 import '../../services/api_service.dart';
 import 'package:intl/intl.dart';
-
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -57,9 +56,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (user != null && mounted) {
         setState(() => _profileData = user);
         _initForm(user);
+        await ref.read(authProvider.notifier).refreshUser();
       }
     } catch (e) {
-      // Use data from auth provider as fallback
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal memuat profil: $e'),
+            backgroundColor: Colors.red[700],
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }

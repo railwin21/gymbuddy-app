@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../services/api_service.dart';
+import '../payment/midtrans_webview_screen.dart';
 
 class MyBookingsScreen extends ConsumerStatefulWidget {
   const MyBookingsScreen({super.key});
@@ -76,7 +77,6 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
 
   Future<void> _payBooking(int bookingId) async {
     if (!mounted) return;
-    // Navigate to payment screen with booking info
     final booking = _bookings.firstWhere(
       (b) => (b['booking_id'] ?? b['id']) == bookingId,
       orElse: () => ({}),
@@ -87,17 +87,85 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
       );
       return;
     }
-    
+
     final payBookingId = booking['id'] ?? bookingId;
-    final title = Uri.encodeComponent(booking['session_title'] ?? 'Sesi Latihan');
-    final amount = double.tryParse((booking['payment_amount'] ?? 0).toString()) ?? 0;
-    
-    final result = await context.push<bool>('/payment/$payBookingId?title=$title&amount=$amount');
-    
-    // Refresh bookings after payment attempt
-    if (result == true) {
-      _loadBookings();
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Text('Menyiapkan pembayaran...'),
+          ],
+        ),
+      ),
+    );
+
+    // Create payment
+    final res = await _api.createPayment(payBookingId);
+    if (!mounted) return;
+    Navigator.of(context).pop(); // dismiss loading dialog
+
+    if (res['success'] == false || res['data'] == null || res['data']?['redirect_url'] == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res['message'] ?? 'Gagal membuat pembayaran'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
     }
+
+    final paymentUrl = res['data']['redirect_url'];
+
+    // Open WebView directly
+    if (!mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MidtransWebViewScreen(
+          paymentUrl: paymentUrl,
+          finishUrl: 'https://gymbuddy.site/dashboard/my-bookings',
+        ),
+      ),
+    );
+
+    // After WebView closes, check payment status
+    if (!mounted) return;
+    final statusRes = await _api.getPaymentStatus(payBookingId);
+    if (!mounted) return;
+
+    final data = statusRes['data'] as Map<String, dynamic>?;
+    final paymentStatus = data?['payment_status'] ?? '';
+    final bookingStatus = data?['status'] ?? '';
+
+    if (paymentStatus == 'settlement' || bookingStatus == 'confirmed') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Pembayaran berhasil! Sesi Anda sudah dikonfirmasi.'),
+          backgroundColor: Colors.green[700],
+        ),
+      );
+    } else if (['deny', 'cancel', 'expire'].contains(paymentStatus)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pembayaran $paymentStatus. Silakan coba lagi.'),
+          backgroundColor: Colors.red[700],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pembayaran masih diproses. Silakan cek status booking Anda.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
+
+    _loadBookings();
   }
 
   @override

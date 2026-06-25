@@ -23,6 +23,8 @@ const envSchema = z.object({
     EMAIL_PASS: z.string().default(''),
     EMAIL_FROM: z.string().default('GymBuddy <noreply@gymbuddy.site>'),
 
+    RESEND_API_KEY: z.string().default(''),
+
     MIDTRANS_SERVER_KEY: z.string().default(''),
     MIDTRANS_CLIENT_KEY: z.string().default(''),
     MIDTRANS_IS_PRODUCTION: z.string().default('false'),

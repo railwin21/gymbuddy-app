@@ -9,7 +9,7 @@
             </svg>
           </div>
           <h2 class="text-3xl font-bold text-white mb-2">Lupa Password<span class="text-red-500">.</span></h2>
-          <p class="text-gray-400 text-sm">Masukkan email akun Anda untuk membuat password baru.</p>
+          <p class="text-gray-400 text-sm">Masukkan email akun Anda. Kode OTP akan dikirim untuk reset password.</p>
         </div>
 
         <div v-if="errorMsg" class="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-4 rounded-2xl mb-6">
@@ -26,7 +26,7 @@
 
           <button type="submit" :disabled="loading"
                   class="w-full bg-red-500 text-white py-4 rounded-2xl font-bold text-lg hover:bg-red-600 shadow-xl shadow-red-500/20 transition-all active:scale-[0.98] disabled:bg-gray-600">
-            {{ loading ? 'Memproses...' : 'Lanjut Reset Password' }}
+            {{ loading ? 'Mengirim OTP...' : 'Kirim Kode OTP' }}
           </button>
         </form>
 
@@ -68,14 +68,11 @@ const handleSubmit = async () => {
   loading.value = true
   errorMsg.value = ''
   try {
-    const res = await api.post('/auth/forgot-password', { email: email.value })
-    const token = res.data?.data?.token || res.data?.token
-    if (token) {
-      showToast('Silakan buat password baru', 'success')
-      router.push({ path: '/reset-password', query: { token } })
-    } else {
-      errorMsg.value = 'Terjadi kesalahan. Coba lagi.'
-    }
+    await api.post('/auth/forgot-password', { email: email.value })
+    showToast('Kode OTP telah dikirim ke email Anda!', 'success')
+    setTimeout(() => {
+      router.push({ path: '/reset-password', query: { email: email.value } })
+    }, 1000)
   } catch (err) {
     errorMsg.value = err.response?.data?.error?.message || err.response?.data?.message || 'Gagal. Coba lagi.'
     showToast(errorMsg.value, 'error')

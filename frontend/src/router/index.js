@@ -8,6 +8,7 @@ import Login from '../views/LoginView.vue'
 import Register from '../views/register.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
+import VerifyOtp from '../views/VerifyOtp.vue'
 
 import DashboardView from '../views/dashboard/DashboardView.vue'
 import FindTrainers from '../views/dashboard/FindTrainers.vue'
@@ -34,6 +35,7 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/forgot-password', component: ForgotPassword },
   { path: '/reset-password', component: ResetPassword },
+  { path: '/verify-otp', component: VerifyOtp },
 
   // Dashboard routes
   { path: '/dashboard', component: DashboardView },
@@ -82,6 +84,11 @@ router.beforeEach((to) => {
 
   // Redirect logged-in users away from login/register
   if ((to.path === '/login' || to.path === '/register') && token) {
+    return { path: '/dashboard' }
+  }
+
+  // Allow verify-otp page even when not logged in
+  if (to.path === '/verify-otp' && token) {
     return { path: '/dashboard' }
   }
 })

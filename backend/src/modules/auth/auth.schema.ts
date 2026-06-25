@@ -49,7 +49,21 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z.object({
     body: z.object({
-        token: z.string().min(1, 'Token wajib diisi'),
+        email: z.string().email('Email tidak valid'),
+        otp: z.string().length(6, 'Kode OTP harus 6 digit'),
         password: z.string().min(6, 'Password minimal 6 karakter'),
+    }),
+});
+
+export const verifyOtpSchema = z.object({
+    body: z.object({
+        email: z.string().email('Email tidak valid'),
+        otp: z.string().length(6, 'Kode OTP harus 6 digit'),
+    }),
+});
+
+export const resendOtpSchema = z.object({
+    body: z.object({
+        email: z.string().email('Email tidak valid'),
     }),
 });

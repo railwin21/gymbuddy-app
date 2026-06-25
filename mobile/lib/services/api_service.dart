@@ -67,7 +67,9 @@ class ApiService {
       final data = e.response?.data;
       String msg;
       if (data is Map) {
-        msg = data['message']?.toString() ?? 'Terjadi kesalahan. Coba lagi.';
+        msg = data['message']?.toString() ??
+            data['error']?['message']?.toString() ??
+            'Terjadi kesalahan. Coba lagi.';
       } else if (data != null) {
         msg = data.toString();
       } else {

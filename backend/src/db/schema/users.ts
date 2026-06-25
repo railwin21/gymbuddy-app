@@ -16,6 +16,7 @@ export const users = pgTable('users', {
     propinsi: varchar('propinsi', { length: 45 }).default(''),
     kota: varchar('kota', { length: 45 }).default(''),
     spesialisasi: varchar('spesialisasi', { length: 100 }),
+    is_verified: boolean('is_verified').default(false).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }),
 }, (table) => ({

@@ -10,6 +10,8 @@ import {
     getMe,
     forgotPassword,
     resetPassword,
+    verifyOtp,
+    resendOtp,
     AuthError,
 } from './auth.service';
 
@@ -38,7 +40,15 @@ export function forgotPasswordController(req: ValidatedRequest, res: Response, _
 }
 
 export function resetPasswordController(req: ValidatedRequest, res: Response, _next: NextFunction) {
-    handleAuth(async () => resetPassword((req.validated!.body as any).token, (req.validated!.body as any).password), res);
+    handleAuth(async () => resetPassword((req.validated!.body as any).email, (req.validated!.body as any).otp, (req.validated!.body as any).password), res);
+}
+
+export function verifyOtpController(req: ValidatedRequest, res: Response, _next: NextFunction) {
+    handleAuth(async () => verifyOtp((req.validated!.body as any).email, (req.validated!.body as any).otp), res);
+}
+
+export function resendOtpController(req: ValidatedRequest, res: Response, _next: NextFunction) {
+    handleAuth(async () => resendOtp((req.validated!.body as any).email), res);
 }
 
 async function handleAuth(fn: () => Promise<any>, res: Response) {

@@ -128,8 +128,16 @@ const handleLogin = async () => {
     }, 500)
 
   } catch (error) {
-    errorMsg.value = error.response?.data?.error?.message || error.response?.data?.message || 'Gagal terhubung ke server'
-    showToast(errorMsg.value, 'error')
+    const errCode = error.response?.data?.error?.code
+    const errMsg = error.response?.data?.error?.message || error.response?.data?.message || 'Gagal terhubung ke server'
+    errorMsg.value = errMsg
+    showToast(errMsg, 'error')
+    
+    if (errCode === 'EMAIL_NOT_VERIFIED') {
+      setTimeout(() => {
+        router.push({ path: '/verify-otp', query: { email: email.value } })
+      }, 1500)
+    }
   } finally {
     loading.value = false
   }
