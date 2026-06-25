@@ -12,7 +12,7 @@ class ApiService {
 
   static const String _prodUrl = 'https://api.gymbuddy.site/api/v1';
   static const String _devUrl = 'http://10.0.2.2:5000/api/v1';
-  static const bool _isProduction = false;
+  static const bool _isProduction = true;
 
   static String get baseUrl => _isProduction ? _prodUrl : _devUrl;
   static String get photoBaseUrl => baseUrl.replaceAll('/api/v1', '');
@@ -89,17 +89,20 @@ class ApiService {
   // ==================== AUTH ====================
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
+      print('[DEBUG] Login baseUrl: $baseUrl');
       final res = await _dio.post('/auth/login', data: {
         'email': email,
         'password': password,
       });
       final data = res.data;
+      print('[DEBUG] Login response: $data');
       if (data['token'] != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', data['token']);
       }
       return data;
     } catch (e) {
+      print('[DEBUG] Login error: $e');
       return _handleError(e);
     }
   }
