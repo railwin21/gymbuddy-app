@@ -22,3 +22,9 @@ backend/uploads/profiles/*
 !backend/uploads/profiles/trainer-gusti.jpeg
 frontend/dist/
 .vercel
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
